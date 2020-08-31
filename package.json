@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "name": "muban-storybook",
+  "workspaces": ["packages/*"]
+}
