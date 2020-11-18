@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "description": "Storybook for Muban: View Muban components in isolation with Hot Reloading.",
   "keywords": [
     "muban",
@@ -8,6 +8,14 @@
   ],
   "author": "Arjan van Wijk",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mediamonks/muban-storybook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mediamonks/muban-storybook/issues"
+  },
+  "homepage": "https://github.com/mediamonks/muban-storybook#readme",
   "main": "dist/client/index.js",
   "types": "dist/client/index.d.ts",
   "bin": {
