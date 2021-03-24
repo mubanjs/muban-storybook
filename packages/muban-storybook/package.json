@@ -10,12 +10,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mediamonks/muban-storybook.git"
+    "url": "git+https://github.com/@mubanjs/muban-storybook.git"
   },
   "bugs": {
-    "url": "https://github.com/mediamonks/muban-storybook/issues"
+    "url": "https://github.com/@mubanjs/muban-storybook/issues"
   },
-  "homepage": "https://github.com/mediamonks/muban-storybook#readme",
+  "homepage": "https://github.com/mubanjs/muban-storybook/tree/main/packages/muban-storybook#readme",
   "main": "dist/client/index.js",
   "types": "dist/client/index.d.ts",
   "bin": {
