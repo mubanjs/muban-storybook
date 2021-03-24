@@ -9,6 +9,8 @@ export {
   raw,
 } from './preview';
 
+export { createDecoratorComponent } from './preview/utils'
+
 if (module && module.hot && module.hot.decline) {
   module.hot.decline();
 }

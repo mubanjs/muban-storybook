@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line import/no-extraneous-dependencies
 export type { RenderContext } from '@storybook/client-api';
+import type { ComponentTemplate, ComponentFactory, LazyComponent } from '@muban/muban';
 
 export interface ShowErrorArgs {
   title: string;
@@ -8,8 +9,10 @@ export interface ShowErrorArgs {
 }
 
 export type StoryFnMubanReturnType = {
-  template: ((data: any) => string) & { compiled?: (data: any) => string };
-  data: any;
+  component?: ComponentFactory<any>;
+  template: ComponentTemplate;
+  data?: any;
+  appComponents?: Array<ComponentFactory | LazyComponent>;
 };
 
 export interface IStorybookStory {
