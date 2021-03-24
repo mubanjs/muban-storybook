@@ -1,12 +1,17 @@
 # @muban/storybook
 
+> :warning: **FOR USE WITH `@mediamonks/muban-core`, USE VERSION `6.0.2`**
+>
+> The `@mediamonks/muban` version is this package works with version `6.0.2`.
+> From version `7` onwards, it will only work with `@mubanjs/muban`.
+
 Storybook for Muban: View Muban components in isolation with Hot Reloading.
 
 This Storybook framework is based on `@storybook/html`, so almost everything you can do
 follows the normal Storybook flow. Best to get familiar by
 [reading the docs](https://storybook.js.org/docs/html/get-started/introduction).
 
-The only differences in `@muban-storybook` are:
+The only differences in `muban-storybook` are:
 - How to define your story function
 - How the component is rendered in the preview iframe
 
@@ -20,30 +25,9 @@ yarn add @muban/storybook
 npm i -S @muban/storybook
 ```
 
-Set up storybook as you would do for any other framework:
+1) Set up storybook as you would do for any other framework.
 
-```js
-// .storybook/main.js
-
-module.exports = {
-  stories: ['../src/**/*.stories.mdx', '../src/**/*.stories.@(js|jsx|ts|tsx)'],
-  addons: [
-    // some default addons
-    '@storybook/addon-essentials',
-    '@storybook/addon-links',
-    '@storybook/addon-storysource',
-    
-    // and this one
-    '@muban/storybook-addon-source',
-  ],
-  webpackFinal: async (config, { configType }) => {
-    // we need to make sure all relevant muban webpack config is added to the storybook config
-    // see down below on how to do this 
-  }
-};
-```
-
-Add the two storybook npm scripts to your package.json:
+2) Add the two storybook npm scripts to your package.json:
 ```json
 {
   "scripts": {
@@ -53,54 +37,44 @@ Add the two storybook npm scripts to your package.json:
 }
 ```
 
-Create a story file next to your Muban component:
+3) Create a story file next to your Muban component:
 
 ```ts
-import { Meta } from '@muban/storybook/dist/client/preview/types-6-0';
+import type { Meta, Story } from '@muban/storybook/dist/client/preview/types-6-0';
+import { MyComponent } from './MyComponent';
+import type { MyComponentProps } from './MyComponent.template';
+import { myComponentTemplate } from './MyComponent.template';
 
 // Most things are just normal storybook configuration
 export default {
   title: 'My Component',
-  component: require('./my-component'), // require your hbs file here, omitting the .hbs extension
   argTypes: {
     title: { control: 'text' },
     content: { control: 'text' },
-  },
-  parameters: {
-    source: {
-      data: require('./data/data.yaml'), // this is for your muban source addon
-    },
-    docs: {
-      description: {
-        component: 'Some additional docs description',
-      },
-    },
   },
 } as Meta;
 
 
 export const Default = () => ({
+  component: MyComponent,
   // this template is optional, if you omit it, this is how it will be used by default
-  template: `<hbs>
-      {{> my-component @root }}
-    </hbs>`,
+  template: myComponentTemplate,
 });
-Default.args = require('./data/data.yaml');
+Default.args = {
+  title: 'Foo',
+  content: 'Bar'
+}
 
-
-// reuse the above template and data, just configuring different args
-export const Simple = Default.bind({});
-Simple.args = require('./data/data-simple');
-
+import { html } from '@muban/muban';
 
 // do more custom things
 export const Custom = (args) => ({ 
   // use any hbs syntax to create your custom story template
-  template: `<hbs>
-      <div style="width: 300px; margin: 0 auto;">
-        {{> my-component @root }}
-      </div>
-    </hbs>`,
+  template: (props) => html`
+    <div style="width: 300px; margin: 0 auto;">
+      ${myComponentTemplate(props)}
+    </div>
+  `,
   // optionally return custom data, you can use the passed args here to modify/etc.
   data: {
     ...args,
@@ -109,23 +83,84 @@ export const Custom = (args) => ({
 });
 ```
 
+The following object makes up a Muban Storybook Component:
+
+* `component` – A reference to a Muban component that will be "initialized" with the template.
+* `template` – Any Muban template function that receives props (and optional ref) and returns a string.
+  This can can be a template function that you import, or some inline `html` that renders the template function.
+* `data` – Some custom data manipulation based on the received `args` that is passed to your template function.
+* `appComponents` – An Array of Muban components that will be registered globally in the "story app".
+
+## Decorators
+
+[Decorators in storybook](https://storybook.js.org/docs/react/writing-stories/decorators) are a very powerful concept
+that allow you to wrap code around your "story component" to add wrappers or context. To use decorators in muban we
+expose a handy helper method to reduce your own setup code; `createDecoratorComponent`.
+
+```ts
+Default.decorators = [
+  createDecoratorComponent(({ story, context, component, template }) => ({
+    appComponents: ...
+    component: ...
+    template: ...
+    data: ...
+  })),
+];
+```
+
+The function parameters contain the following:
+
+* `story` – the story function, if you call `story()` you "retrieve" the child story,
+  which is a story object with a component, template, data, etc. You won't normally use
+  this because we provide the component and rendered template separately for you.
+* `context` – the story context, like parameters, args, etc.
+* `component` – just `story().component`, make sure to pass this in the `components: [component]`
+  array of any decorator component you return.
+* `template` – a rendered child template you can inline in your decorator template,
+  which already has the props applied; `story().template(context.args ?? {})`;
+
+The return object may contain any of the properties your normal story can also contain.
+
+A basic example:
+```ts
+Default.decorators = [
+  createDecoratorComponent(({ story, context, component, template }) => ({
+    // provide globally registered componenet to the "muban app" that renders the story
+    appComponents: [Icon],
+    // provide context components that adds something to the context that your story components need
+    component: defineComponent({
+      name: 'context',
+      setup() {
+        provide('someContext', new ContextValue());
+      }
+    }),
+    // provide a template function that is a 300px centered container
+    template: () => html`
+      <div data-component="context" style="width: 300px; margin: 0 auto;">
+        ${template}
+      </div>
+    `,
+  })),
+];
+```
+
+Either of the above parameters are optional.
+* If you only provide a component, then `createDecoratorComponent` will a automatically
+  create a wrapper div template for you, matching the component name as `data-component`.
+* If you only provide a template, then `createDecoratorComponent` will just provide the
+  child story component as the component value.
+
+
 ## Webpack Config
 
 To render Muban components in the Storybook preview iframe, we need to apply the same webpack config we have in muban
-to Storbook. To not duplicate a lot of code, we should try to re-use as much of the default muban webpack as possible.
+to Storybook. To not duplicate a lot of code, we should try to re-use as much of the default muban webpack as possible.
 
-To see how to set this up, look at the most up-to-date config in the muban repository.
+Keep in mind though that storybook still uses webpack 4, while your muban project might already uses webpack 5.
 
-As a TLDR; make sure the following is configured:
-- exclude svg from the default storybook `file-loader` config
-- include all hbs rules (that apply for hbs files)
-- include all the data rules (for json and yaml files, including the import-loader)
-- include all style rules (for scss setup)
-- include al svg rules (that's why we removed the default ones from storybook)
-- merge the muban "resolve" webpack config
-- when passing options to the reusable config, make sure that `partials` and `code` is `false`,
-  and that `isDevelopment` and `buildType` follow the `configType` from storybook webpack  
-  
+Have a look at [mubanjs/muban-skeleton/.storybook/webpack.config.ts](https://github.com/mubanjs/muban-skeleton/blob/main/.storybook/webpack.config.ts)
+to see how it's done.
+
 ## Global styles
 
 If you rely on global styles / fonts / etc, make sure to also load them into storybook.
@@ -133,6 +168,6 @@ If you rely on global styles / fonts / etc, make sure to also load them into sto
 This can be done by importing them into the `.storybook/preview.js` file.
 
 If you need some HTML or external scripts/styles, you can add that to the
-`.storybook/preview-head.html` or `.storybook/preview-head.html` files.
+`.storybook/preview-head.html` or `.storybook/preview-body.html` files.
 
 This is all exactly the same as normal storybook setup, so you can find everything you need in their docs.
