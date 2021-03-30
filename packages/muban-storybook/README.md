@@ -1,11 +1,11 @@
 # @muban/storybook
 
+Storybook for Muban: View Muban components in isolation with Hot Reloading.
+
 > :warning: **FOR USE WITH `@mediamonks/muban-core`, USE VERSION `6.0.2`**
 >
 > The `@mediamonks/muban` version is this package works with version `6.0.2`.
 > From version `7` onwards, it will only work with `@mubanjs/muban`.
-
-Storybook for Muban: View Muban components in isolation with Hot Reloading.
 
 This Storybook framework is based on `@storybook/html`, so almost everything you can do
 follows the normal Storybook flow. Best to get familiar by

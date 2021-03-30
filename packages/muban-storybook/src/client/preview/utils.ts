@@ -1,4 +1,4 @@
-import { ComponentTemplateResult, html } from '@muban/muban';
+import { ComponentTemplateResult, html } from '@muban/template';
 import type { StoryContext } from '@storybook/addons/dist/types';
 import type { StoryFnMubanReturnType } from './types';
 

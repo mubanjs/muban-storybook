@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // eslint-disable-next-line import/no-extraneous-dependencies
 export type { RenderContext } from '@storybook/client-api';
-import type { ComponentTemplate, ComponentFactory, LazyComponent } from '@muban/muban';
+import type { ComponentFactory, LazyComponent } from '@muban/muban';
+import type { ComponentTemplate } from '@muban/template';
 
 export interface ShowErrorArgs {
   title: string;
