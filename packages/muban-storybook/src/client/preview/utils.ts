@@ -18,30 +18,42 @@ export function createDecoratorComponent(
   }) => Partial<StoryFnMubanReturnType>,
 ): (story: StoryFn, context: StoryContext) => StoryFnMubanReturnType {
   return (story, context): StoryFnMubanReturnType => {
+    const storyComponent = story();
     const decoratorComponent = createDecoratorFn({
       story,
       context,
       // TODO: document that not all stories have components
-      component: story().component,
-      template: story().template(context.args ?? {})
+      component: storyComponent.component,
+      template: storyComponent.template(context.args ?? {})
     });
 
+
+    // merge appComponents to pass "up", so story renderer can access it
+    const appComponents = [
+      ...(decoratorComponent.appComponents ?? []),
+      ...(storyComponent.appComponents ?? [])
+    ];
+
     if (!decoratorComponent.component && !decoratorComponent.template) {
-      return story();
+      return {
+        ...storyComponent,
+        appComponents,
+      };
     }
 
-    const component = decoratorComponent.component ?? story().component;
-    let template = decoratorComponent.template ?? story().template;
+    const component = decoratorComponent.component ?? storyComponent.component;
+    let template = decoratorComponent.template ?? storyComponent.template;
 
     // create dummy template attaching to the decoratorComponent so it gets initialized
     if (!decoratorComponent.template && decoratorComponent.component) {
       template = (): string | Array<string> =>
         html`<div data-component=${decoratorComponent.component!.displayName}>
-          ${story().template(context.args ?? {})}
+          ${storyComponent.template(context.args ?? {})}
         </div>`;
     }
 
     return {
+      appComponents,
       component,
       template,
     };
