@@ -43,8 +43,8 @@
     "fix:prettier": "prettier \"src/**/*.js,jsx,ts,tsx,scss}\" --write"
   },
   "peerDependencies": {
-    "@muban/muban": "^1",
-    "@muban/template": "^1"
+    "@muban/muban": "^1.0.0-alpha",
+    "@muban/template": "^1.0.0-alpha"
   },
   "dependencies": {
     "@storybook/addons": "^6.1.21",
