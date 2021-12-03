@@ -5,11 +5,14 @@ import type { RenderContext, StoryFnMubanReturnType } from './types';
 
 const rootElement = document.querySelector('#root');
 
-export default function renderMain({
-  storyFn,
-  args,
-  showMain,
-}: RenderContext): void {
+export default function renderMain(options: RenderContext): void {
+  const {
+    storyFn,
+    showMain,
+  } = options;
+
+  const args = options.storyContext.args || options.args;
+
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();
 
