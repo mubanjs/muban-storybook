@@ -15,6 +15,18 @@ The only differences in `muban-storybook` are:
 - How to define your story function
 - How the component is rendered in the preview iframe
 
+## Versions
+
+`@muban/storybook` tries to keep in sync with `@storybook/core`. Whenever we can, it will retain some backwards 
+compatibility for the runtime API. In some case though, the definitions change in a way this is not possible.
+
+The list below helps to see what version of storybook is included, so what features can be used inside your project. 
+
+| @muban/storybook | @storybook/core |
+|------------------|-----------------|
+| `7.0.0-alpha.16` | `6.4.9`         |
+| `7.0.0-alpha.15` | `6.1.21`        |
+
 ## Getting started
 
 Install this package in your project:
