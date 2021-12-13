@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Args as DefaultArgs, Annotations, BaseMeta, BaseStory } from '@storybook/addons';
+import type { Args as DefaultArgs, Annotations, BaseMeta, BaseStoryFn } from '@storybook/addons';
 import type { StoryFnMubanReturnType } from './types';
 
 export { Args, ArgTypes, Parameters, StoryContext } from '@storybook/addons';
@@ -20,5 +20,5 @@ export type Meta<Args = DefaultArgs> = BaseMeta<MubanComponent> &
  *
  * @see [Named Story exports](https://storybook.js.org/docs/formats/component-story-format/#named-story-exports)
  */
-export type Story<Args = DefaultArgs> = BaseStory<Args, MubanReturnType> &
+export type Story<Args = DefaultArgs> = BaseStoryFn<Args, MubanReturnType> &
   Annotations<Args, MubanReturnType>;
