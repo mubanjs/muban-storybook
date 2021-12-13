@@ -9,6 +9,11 @@ export interface ShowErrorArgs {
   description: string;
 }
 
+export type MubanFramework = {
+  component: any;
+  storyResult: StoryFnMubanReturnType;
+};
+
 export type StoryFnMubanReturnType = {
   component?: ComponentFactory<any>;
   template: ComponentTemplate;

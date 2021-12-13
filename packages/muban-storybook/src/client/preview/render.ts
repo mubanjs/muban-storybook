@@ -1,17 +1,18 @@
 /* eslint-disable no-restricted-properties,@typescript-eslint/no-explicit-any */
 import { createApp } from '@muban/muban';
 import { document } from 'global';
-import type { RenderContext, StoryFnMubanReturnType } from './types';
+import type { MubanFramework, RenderContext, StoryFnMubanReturnType } from './types';
 
 const rootElement = document.querySelector('#root');
 
-export default function renderMain(options: RenderContext): void {
+export default function renderMain(options: RenderContext<MubanFramework>): void {
   const {
     storyFn,
     showMain,
   } = options;
 
-  const args = options.storyContext.args || options.args;
+  // backwards compatibility in types
+  const args = options.storyContext.args || (options as any).args;
 
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();

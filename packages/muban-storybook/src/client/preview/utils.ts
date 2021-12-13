@@ -1,5 +1,5 @@
 import { ComponentTemplateResult, html } from '@muban/template';
-import type { StoryContext } from '@storybook/addons/dist/types';
+import type { StoryContext } from '@storybook/addons';
 import type { StoryFnMubanReturnType } from './types';
 
 type StoryFn = () => StoryFnMubanReturnType;
