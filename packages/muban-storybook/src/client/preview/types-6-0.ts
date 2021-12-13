@@ -22,3 +22,4 @@ export type Meta<Args = DefaultArgs> = BaseMeta<MubanComponent> &
  */
 export type Story<Args = DefaultArgs> = BaseStoryFn<Args, MubanReturnType> &
   Annotations<Args, MubanReturnType>;
+// TODO: might be good to switch back to `BaseStory`, once we know if we want to support story objects
