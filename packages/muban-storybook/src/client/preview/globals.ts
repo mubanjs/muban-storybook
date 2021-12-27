@@ -1,3 +1,5 @@
-import { window } from 'global';
+import global from 'global';
 
-window.STORYBOOK_ENV = 'Muban';
+const { window: globalWindow } = global;
+
+globalWindow.STORYBOOK_ENV = 'Muban';

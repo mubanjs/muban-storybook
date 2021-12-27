@@ -15,6 +15,23 @@ The only differences in `muban-storybook` are:
 - How to define your story function
 - How the component is rendered in the preview iframe
 
+## Versions
+
+`@muban/storybook` tries to keep in sync with `@storybook/core`. Whenever we can, it will retain some backwards 
+compatibility for the runtime API. In some case though, the definitions change in a way this is not possible.
+
+The list below helps to see what version of storybook is included, so what features can be used inside your project. 
+
+| @muban/storybook | @storybook/core  |
+|------------------|------------------|
+| `7.0.0-alpha.17` | `6.4.9+` (CSFv3) |
+| `7.0.0-alpha.16` | `6.4.9`          |
+| `7.0.0-alpha.15` | `6.1.21`         |
+
+`7.0.0-alpha.17` adds support for:
+* CSFv3 (object) stories – used by default
+* Server rendered muban components
+
 ## Getting started
 
 Install this package in your project:
@@ -37,10 +54,49 @@ npm i -S @muban/storybook
 }
 ```
 
-3) Create a story file next to your Muban component:
+3) In your `.storybook/main.js`, add `previewCsfV3` to make use of
+   [version 3 of the Component Story Format](https://storybook.js.org/blog/component-story-format-3-0/).
+   This is using objects for stories, giving you more flexibility and new awesome features;
+
+```js
+module.exports = {
+  features: {
+    previewCsfV3: true,
+  }
+};
+```
+
+4) In your `.storybook/preview.js` you can configure the server url, and optionally provide a custom fetch function 
+   (e.g. one that uses `POST`);
+
+```js
+export const parameters = {
+  server: {
+    url: `http://localhost:3000/story`,
+    // fetchStoryHtml: customFetchStoryHtml,
+  },
+}
+```
+
+`fetchStoryHtml` should be an async function with the following signature
 
 ```ts
-import type { Meta, Story } from '@muban/storybook/dist/client/preview/types-6-0';
+type FetchStoryHtmlType = (
+    url: string,
+    id: string,
+    params: any,
+    context: StoryContext
+  ) => Promise<string>;
+```
+* `url` – Server url configured by the `parameters.server.url`
+* `id` – Id of the story being rendered given by `parameters.server.id`
+* `params` – Merged story params `parameters.server.params` and story args
+* `context` – The context of the story
+
+5) Create a story file next to your Muban component:
+
+```ts
+import type { Meta, Story } from '@muban/storybook';
 import { MyComponent } from './MyComponent';
 import type { MyComponentProps } from './MyComponent.template';
 import { myComponentTemplate } from './MyComponent.template';
@@ -54,34 +110,114 @@ export default {
   },
 } as Meta;
 
+// A default CSFv3 object story
+export const Default: Story<MyComponentProps> = {
+  render: () => ({
+    component: MyComponent,
+    // this template is optional, if you omit it, this is how it will be used by default
+    template: myComponentTemplate,
+  }),
+  args: {
+    title: 'Foo',
+    content: 'Bar'
+  }
+};
+```
 
-export const Default = () => ({
+Or a legacy function component:
+```ts
+import type { Meta, StoryFn } from '@muban/storybook';
+import { MyComponent } from './MyComponent';
+import type { MyComponentProps } from './MyComponent.template';
+import { myComponentTemplate } from './MyComponent.template';
+
+// Most things are just normal storybook configuration
+export default {
+  title: 'My Component',
+  argTypes: {
+    title: { control: 'text' },
+    content: { control: 'text' },
+  },
+} as Meta;
+
+// A legacy function story
+export const LegacyStory: StoryFn<MyComponentProps> = () => ({
   component: MyComponent,
   // this template is optional, if you omit it, this is how it will be used by default
   template: myComponentTemplate,
 });
-Default.args = {
+LegacyStory.args = {
   title: 'Foo',
   content: 'Bar'
 }
+```
 
+Or do some custom things:
+```ts
 import { html } from '@muban/muban';
+import type { Meta, Story } from '@muban/storybook';
+import { MyComponent } from './MyComponent';
+import type { MyComponentProps } from './MyComponent.template';
+import { myComponentTemplate } from './MyComponent.template';
 
-// do more custom things
-export const Custom = (args) => ({ 
-  // use any hbs syntax to create your custom story template
-  template: (props) => html`
+// Most things are just normal storybook configuration
+export default {
+  title: 'My Component',
+  argTypes: {
+    title: { control: 'text' },
+    content: { control: 'text' },
+  },
+} as Meta;
+
+// Do more custom things
+export const Custom: Story<MyComponentProps> = {
+  render: (args) => ({
+    // Add custom html around your component template
+    template: (props) => html`
     <div style="width: 300px; margin: 0 auto;">
       ${myComponentTemplate(props)}
     </div>
   `,
-  // optionally return custom data, you can use the passed args here to modify/etc.
-  data: {
-    ...args,
-    foo: 'bar'
-  }
-});
+    // optionally return custom data, you can use the passed args here to modify/etc.
+    data: {
+      ...args,
+      foo: 'bar'
+    }
+  }),
+};
 ```
+
+Or render a server component:
+```ts
+import { html } from '@muban/muban';
+import type { Meta, Story } from '@muban/storybook';
+import { MyComponent } from './MyComponent';
+import type { MyComponentProps } from './MyComponent.template';
+
+// Most things are just normal storybook configuration
+export default {
+  title: 'My Component',
+  component: MyComponent,
+  argTypes: {
+    title: { control: 'text' },
+    content: { control: 'text' },
+  },
+} as Meta;
+
+// Render a server component template
+export const Server: Story<MyComponentProps> = {
+  parameters: {
+    server: {
+      id: 'myComponent',
+    },
+  },
+  args: {
+    title: 'Foo',
+    content: 'Bar'
+  }
+}
+```
+
 
 The following object makes up a Muban Storybook Component:
 
@@ -130,6 +266,8 @@ Default.decorators = [
     // provide context components that adds something to the context that your story components need
     component: defineComponent({
       name: 'context',
+      // make sure to define this
+      components: component ? [component] : [],
       setup() {
         provide('someContext', new ContextValue());
       }
@@ -137,6 +275,7 @@ Default.decorators = [
     // provide a template function that is a 300px centered container
     template: () => html`
       <div data-component="context" style="width: 300px; margin: 0 auto;">
+        <!-- render the child template -->
         ${template}
       </div>
     `,
@@ -150,13 +289,30 @@ Either of the above parameters are optional.
 * If you only provide a template, then `createDecoratorComponent` will just provide the
   child story component as the component value.
 
+Have a look at the example [Decorator Stories](../example/src/Decorators.stories.ts) to see some more variations.
 
 ## Webpack Config
 
 To render Muban components in the Storybook preview iframe, we need to apply the same webpack config we have in muban
 to Storybook. To not duplicate a lot of code, we should try to re-use as much of the default muban webpack as possible.
 
-Keep in mind though that storybook still uses webpack 4, while your muban project might already uses webpack 5.
+Keep in mind though that storybook still uses webpack 4 by default, while your muban project might already uses 
+webpack 5. In that case you can configure storybook to use webpack 5;
+
+Install the following packages:
+```json
+"@storybook/builder-webpack5": "^6.4.9",
+"@storybook/manager-webpack5": "^6.4.9",
+```
+
+And configure `.storybook/main.js` to use this builder:
+```js
+module.exports = {
+  core: {
+    builder: "webpack5",
+  }
+};
+```
 
 Have a look at [mubanjs/muban-skeleton/.storybook/webpack.config.ts](https://github.com/mubanjs/muban-skeleton/blob/main/.storybook/webpack.config.ts)
 to see how it's done.
