@@ -70,10 +70,6 @@ export async function renderToDom(
     storyContext,
     storyContext: { parameters, args, argTypes },
   } = options;
-  const {
-    server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
-  } = parameters;
-
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();
 
@@ -92,7 +88,10 @@ export async function renderToDom(
     app.component(...(componentStory.appComponents || []));
   }
 
-  if (options.storyContext.parameters.server && storyId) {
+  if (options.storyContext.parameters.server && options.storyContext.parameters.server.id) {
+    const {
+      server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
+    } = parameters;
     const storyArgs = buildStoryArgs(args, argTypes);
     const fetchId = storyId || id;
     const storyParams = { ...params, ...storyArgs };
