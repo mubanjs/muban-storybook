@@ -55,7 +55,7 @@
   "dependencies": {
     "@storybook/addons": "^6.4.9",
     "@storybook/core": "^6.4.9",
-    "@storybook/csf": "^0.0.2--canary.87bc651.0",
+    "@storybook/csf": "0.0.2--canary.87bc651.0",
     "@types/loader-utils": "^2.0.1",
     "@types/webpack": "^4.41.21",
     "@types/webpack-env": "^1.15.2",
