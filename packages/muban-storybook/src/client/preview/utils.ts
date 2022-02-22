@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/prevent-abbreviations */
-import { ComponentTemplateResult, html, unsafeHTML } from '@muban/template';
+import { ComponentTemplateResult, html } from '@muban/template';
 import type { DecoratorFunction, StoryContext } from '@storybook/csf';
 import type { StoryFnMubanReturnType } from './types';
 import type { MubanFramework } from './types-6-0';
@@ -50,7 +50,7 @@ export function createDecoratorComponent<Args>(
     if (!decoratorComponent.template && decoratorComponent.component) {
       template = (): string | Array<string> =>
         html`<div data-component=${decoratorComponent.component!.displayName}>
-          ${unsafeHTML(storyTemplateResult.toString())}
+          ${storyTemplateResult}
         </div>`;
     }
 
