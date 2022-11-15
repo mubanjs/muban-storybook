@@ -8,16 +8,16 @@
     "storybook": "start-storybook -p 6006"
   },
   "devDependencies": {
-    "@muban/muban": "^1.0.0-alpha.28",
-    "@muban/template": "^1.0.0-alpha.1",
-    "@muban/hooks": "^1.0.0-alpha.3",
-    "@muban/storybook": "^7.0.0-alpha.15",
-    "@storybook/addon-actions": "^6.4.9",
-    "@storybook/addon-essentials": "^6.4.9",
-    "@storybook/addon-links": "^6.4.9",
+    "@muban/muban": "^1.0.0-alpha.35",
+    "@muban/template": "^1.0.0-alpha.4",
+    "@muban/hooks": "^1.0.0-alpha.4",
+    "@muban/storybook": "^7.0.0-alpha.20",
+    "@storybook/addon-actions": "^6.5.13",
+    "@storybook/addon-essentials": "^6.5.13",
+    "@storybook/addon-links": "^6.5.13",
     "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/builder-webpack5": "^6.4.9",
-    "@storybook/manager-webpack5": "^6.4.9",
-    "typescript": "^4.5.4"
+    "@storybook/builder-webpack5": "^6.5.13",
+    "@storybook/manager-webpack5": "^6.5.13",
+    "typescript": "^4.6.4"
   }
 }

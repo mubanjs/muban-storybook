@@ -1,6 +1,6 @@
 /* eslint-disable no-restricted-properties,@typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations,@typescript-eslint/naming-convention */
 import { createApp } from '@muban/muban';
-import type { App } from '@muban/muban/lib/api/apiCreateApp';
+import type { App } from '@muban/muban';
 import type { ArgsStoryFn, StoryContext, Args, ArgTypes } from '@storybook/csf';
 import { document } from 'global';
 import type { RenderContext, StoryFnMubanReturnType } from './types';
@@ -68,7 +68,7 @@ export async function renderToDom(
     storyFn,
     showMain,
     storyContext,
-    storyContext: { parameters, args, argTypes },
+    storyContext: { parameters, args, argTypes, globals },
   } = options;
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();
@@ -88,7 +88,12 @@ export async function renderToDom(
     app.component(...(componentStory.appComponents || []));
   }
 
-  if (options.storyContext.parameters.server && options.storyContext.parameters.server.id) {
+  if (
+    options.storyContext.parameters.server?.url &&
+    options.storyContext.parameters.server?.id &&
+    !options.storyContext.parameters.server?.disabled &&
+    globals.serverRendering !== 'disabled'
+  ) {
     const {
       server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
     } = parameters;

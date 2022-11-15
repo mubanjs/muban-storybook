@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook",
-  "version": "7.0.0-alpha.20",
+  "version": "7.0.0-alpha.21",
   "description": "Storybook for Muban: View Muban components in isolation with Hot Reloading.",
   "keywords": [
     "muban",
@@ -53,8 +53,8 @@
     "@muban/template": "^1.0.0-alpha"
   },
   "dependencies": {
-    "@storybook/addons": "^6.4.9",
-    "@storybook/core": "^6.4.9",
+    "@storybook/addons": "^6.5.13",
+    "@storybook/core": "^6.5.13",
     "@storybook/csf": "0.0.2--canary.87bc651.0",
     "@types/loader-utils": "^2.0.1",
     "@types/webpack": "^4.41.21",
@@ -65,14 +65,14 @@
     "react-dom": "^17.0.1"
   },
   "devDependencies": {
-    "@mediamonks/eslint-config-base": "^2.0.0-alpha.4",
-    "@muban/muban": "^1.0.0-alpha.28",
-    "@muban/template": "^1.0.0-alpha.1",
+    "@mediamonks/eslint-config-base": "^2.2.1",
+    "@muban/muban": "^1.0.0-alpha.35",
+    "@muban/template": "^1.0.0-alpha.4",
     "husky": "^4.2.5",
     "lint-staged": "^12.1.4",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.5.1",
     "sort-package-json": "^1.44.0",
-    "typescript": "^4.5.3"
+    "typescript": "^4.6.4"
   }
 }
