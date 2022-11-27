@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook",
-  "version": "7.0.0-alpha.21",
+  "version": "7.0.0-alpha.22",
   "description": "Storybook for Muban: View Muban components in isolation with Hot Reloading.",
   "keywords": [
     "muban",
@@ -36,6 +36,7 @@
     "standalone.js"
   ],
   "scripts": {
+    "dev": "npm run build:ts-esm -- --watch",
     "build": "npm-run-all -s build:*",
     "build:ts-cjs": "tsc -p ./tsconfig.json",
     "build:ts-esm": "tsc -p ./tsconfig.build.esm.json",
