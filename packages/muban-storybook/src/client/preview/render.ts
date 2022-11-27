@@ -88,6 +88,9 @@ export async function renderToDom(
     app.component(...(componentStory.appComponents || []));
   }
 
+  // TODO: type correctly after returnType from `app.mount` is fixed in muban
+  let componentInstance: any;
+
   if (
     options.storyContext.parameters.server?.url &&
     options.storyContext.parameters.server?.id &&
@@ -104,7 +107,7 @@ export async function renderToDom(
 
     if (serverTemplate) {
       container.innerHTML = serverTemplate;
-      app?.mount(container);
+      componentInstance = app?.mount(container);
     } else {
       options.showError({
         title: `Expecting an HTML snippet from the story: "${name}" of "${kind}".`,
@@ -115,11 +118,27 @@ export async function renderToDom(
     // create a full muban app
     // eslint-disable-next-line no-lonely-if
     if (app) {
-      app.mount(container, componentStory.template, data);
+      componentInstance = app.mount(container, componentStory.template, data);
     } else {
       // only render the basic template
       container.innerHTML = [].concat(componentStory.template(data) as any).join('');
     }
+  }
+
+  // if we were able to mount a component,
+  // then pass the action props to it,
+  // so it can call the action handlers to show in the actions panel
+  if (componentInstance) {
+    // filter out all arg names that are action types
+    const actionArgs = Object.entries(argTypes)
+      .filter(([, { action }]) => !!action)
+      .map(([actionName]) => actionName);
+
+    // filter args that are actions
+    const actionProps = Object.fromEntries(
+      Object.entries(args).filter(([argName]) => actionArgs.includes(argName)),
+    );
+    componentInstance.setProps(actionProps);
   }
 
   // options.showError({
