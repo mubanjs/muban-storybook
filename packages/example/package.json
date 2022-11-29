@@ -5,19 +5,26 @@
   "author": "Arjan van Wijk",
   "license": "MIT",
   "scripts": {
-    "storybook": "start-storybook -p 6006"
+    "storybook": "start-storybook -p 6006",
+    "lint": "npm-run-all lint:*",
+    "lint:eslint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache",
+    "fix": "npm-run-all fix:*",
+    "fix:eslint": "npm run lint:eslint -- --fix",
+    "fix:prettier": "prettier \"src/**/*.{js,jsx,ts,tsx,scss}\" \".storybook/**/*.{js,jsx,ts,tsx,scss}\" --write"
   },
   "devDependencies": {
-    "@muban/muban": "^1.0.0-alpha.35",
-    "@muban/template": "^1.0.0-alpha.4",
+    "@mediamonks/eslint-config-base": "^2.2.1",
     "@muban/hooks": "^1.0.0-alpha.4",
+    "@muban/muban": "^1.0.0-alpha.35",
     "@muban/storybook": "^7.0.0-alpha.20",
+    "@muban/template": "^1.0.0-alpha.4",
     "@storybook/addon-actions": "^6.5.13",
     "@storybook/addon-essentials": "^6.5.13",
     "@storybook/addon-links": "^6.5.13",
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/builder-webpack5": "^6.5.13",
     "@storybook/manager-webpack5": "^6.5.13",
+    "eslint": "^8.28.0",
     "typescript": "^4.6.4"
   }
 }

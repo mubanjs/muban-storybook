@@ -49,6 +49,7 @@ export function createDecoratorComponent<Args>(
     // create dummy template attaching to the decoratorComponent so it gets initialized
     if (!decoratorComponent.template && decoratorComponent.component) {
       template = (): string | Array<string> =>
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         html`<div data-component=${decoratorComponent.component!.displayName}>
           ${storyTemplateResult}
         </div>`;

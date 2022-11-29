@@ -19,11 +19,10 @@ interface ClientApi extends ClientStoryApi<StoryFnMubanReturnType> {
 
 const api = start(renderToDom, { render });
 
-export const storiesOf: ClientApi['storiesOf'] = (kind, m) => {
-  return (api.clientApi.storiesOf(kind, m) as ReturnType<ClientApi['storiesOf']>).addParameters({
+export const storiesOf: ClientApi['storiesOf'] = (kind, m) =>
+  (api.clientApi.storiesOf(kind, m) as ReturnType<ClientApi['storiesOf']>).addParameters({
     framework,
   });
-};
 
 export const configure: ClientApi['configure'] = (...args) => api.configure(framework, ...args);
 export const addDecorator = api.clientApi.addDecorator as ClientApi['addDecorator'];
