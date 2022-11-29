@@ -1,14 +1,9 @@
-import type {
-  TemplateStoryProps,
-  StoryObj,
-  Story,
-  Meta,
-} from "@muban/storybook";
-import { StoryComponent, storyTemplate } from "./Component";
-import { argTypes } from "./StoryComponent.argTypes";
+import type { TemplateStoryProps, StoryObj, Story, Meta } from '@muban/storybook';
+import { StoryComponent, storyTemplate } from './Component';
+import { argTypes } from './StoryComponent.argTypes';
 
 export default {
-  title: "CSF v3",
+  title: 'CSF v3',
   argTypes,
 } as Meta;
 
