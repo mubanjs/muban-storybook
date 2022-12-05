@@ -21,7 +21,14 @@ export function createDecoratorComponent<Args>(
 ): DecoratorFunction<MubanFramework, Args> {
   return (story, context) => {
     const storyComponent = story();
-    const storyTemplateResult = storyComponent.template(context.args ?? {});
+    let storyTemplateResult = storyComponent.template(context.args ?? {});
+
+    // If we are currently rendering on the server, we inject a __PLACEHOLDER__ when our story is empty.
+    // This allows us to identify where to inject our server-rendered story inside the decorators.
+    if (context.globals.renderMode === 'server') {
+      storyTemplateResult ||= '__PLACEHOLDER__';
+    }
+
     const decoratorComponent = createDecoratorFn({
       story,
       context,
