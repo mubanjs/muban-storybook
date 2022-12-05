@@ -6,6 +6,8 @@ import { document } from 'global';
 import type { RenderContext, StoryFnMubanReturnType } from './types';
 import type { MubanFramework } from './types-6-0';
 
+const DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION = '__PLACEHOLDER__';
+
 async function defaultFetchStoryHtml(
   url: string,
   path: string,
@@ -68,7 +70,7 @@ export async function renderToDom(
     storyFn,
     showMain,
     storyContext,
-    storyContext: { parameters, args, argTypes, globals },
+    storyContext: { parameters, args, argTypes, globals, undecoratedStoryFn },
   } = options;
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();
@@ -91,11 +93,38 @@ export async function renderToDom(
   // TODO: type correctly after returnType from `app.mount` is fixed in muban
   let componentInstance: any;
 
+  if (globals.renderMode === 'server') {
+    if (!options.storyContext.parameters.server?.url) {
+      options.showError({
+        title: `Server url is not configured`,
+        description: `You've chosen server rendering, but "parameters.server.url" is not configured.`,
+      });
+      return;
+    }
+    if (!options.storyContext.parameters.server?.id) {
+      options.showError({
+        title: `Server story id is not configured`,
+        description: `You've chosen server rendering, but "parameters.server.id" is not configured for your story,
+which means the server doesn't know which template to render.`,
+      });
+      return;
+    }
+    if (options.storyContext.parameters.server?.disabled) {
+      options.showError({
+        title: `Server rendering is disabled`,
+        description: `You've chosen server rendering, but "parameters.server.disabled" is set to disallow
+server rendering (for this component/story).`,
+      });
+      return;
+    }
+  }
+
   if (
-    options.storyContext.parameters.server?.url &&
-    options.storyContext.parameters.server?.id &&
-    !options.storyContext.parameters.server?.disabled &&
-    globals.serverRendering !== 'disabled'
+    globals.renderMode === 'server' ||
+    (!globals.renderMode &&
+      options.storyContext.parameters.server?.url &&
+      options.storyContext.parameters.server?.id &&
+      !options.storyContext.parameters.server?.disabled)
   ) {
     const {
       server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
@@ -106,8 +135,57 @@ export async function renderToDom(
     serverTemplate = await fetchStoryHtml(url, fetchId, storyParams, storyContext);
 
     if (serverTemplate) {
-      container.innerHTML = serverTemplate;
-      componentInstance = app?.mount(container);
+      const getInjectedServerTemplate = () => {
+        // render story template without decorators
+        const undecoratedTemplateResult = []
+          .concat(undecoratedStoryFn(storyContext).template(data) as any)
+          .join('');
+
+        // render everything
+        const fullTemplateResult = [].concat(componentStory.template(data) as any).join('');
+
+        // if both are equal, there are no decorators, and we can just render the serverTemplate
+        if (undecoratedTemplateResult === fullTemplateResult) {
+          return serverTemplate;
+        }
+
+        if (
+          undecoratedTemplateResult === '' &&
+          fullTemplateResult.includes(DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION)
+        ) {
+          return fullTemplateResult.replace(
+            DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
+            serverTemplate,
+          );
+        }
+
+        // remove the story from the complete output, leaving just the decorators, with a __PLACEHOLDER__
+        const decoratorWithPlaceholder = fullTemplateResult.replace(
+          undecoratedTemplateResult,
+          DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
+        );
+
+        if (!decoratorWithPlaceholder.includes(DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION)) {
+          options.showError({
+            title: `Something is wrong with the story and decorators`,
+            description: `Failed to extract the story from the decorators, so the server-rendered template cannot be included.
+          Are you passing custom props from the decorator template to your story template that change how it renders?`,
+          });
+          return null;
+        }
+
+        return decoratorWithPlaceholder.replace(
+          DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
+          serverTemplate,
+        );
+      };
+
+      const finalServerTemplate = getInjectedServerTemplate();
+
+      if (finalServerTemplate) {
+        container.innerHTML = finalServerTemplate;
+        componentInstance = app?.mount(container);
+      }
     } else {
       options.showError({
         title: `Expecting an HTML snippet from the story: "${name}" of "${kind}".`,

@@ -8,14 +8,14 @@ export const parameters = {
 
 // add global var to control server rendering
 export const globalTypes = {
-  serverRendering: {
-    name: 'Server',
-    description: 'Server Rendering',
-    defaultValue: 'allowed',
+  renderMode: {
+    name: 'Render Mode',
+    description: 'Render template on the server or client',
+    defaultValue: 'client',
     toolbar: {
       icon: 'transfer',
       // Array of plain string values or MenuItem shape (see below)
-      items: ['allowed', 'disabled'],
+      items: ['client', 'server'],
       // Property that specifies if the name of the item will be displayed
       // showName: true,
       // Change title based on selected value

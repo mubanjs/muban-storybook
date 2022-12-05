@@ -22,11 +22,20 @@ compatibility for the runtime API. In some case though, the definitions change i
 
 The list below helps to see what version of storybook is included, so what features can be used inside your project. 
 
-| @muban/storybook | @storybook/core  |
-|------------------|------------------|
-| `7.0.0-alpha.17` | `6.4.9+` (CSFv3) |
-| `7.0.0-alpha.16` | `6.4.9`          |
-| `7.0.0-alpha.15` | `6.1.21`         |
+| @muban/storybook | @storybook/core   |
+|------------------|-------------------|
+| `7.0.0-alpha.23` | `6.5.13+` (CSFv3) |
+| `7.0.0-alpha.21` | `6.5.13+` (CSFv3) |
+| `7.0.0-alpha.17` | `6.4.9+` (CSFv3)  |
+| `7.0.0-alpha.16` | `6.4.9`           |
+| `7.0.0-alpha.15` | `6.1.21`          |
+
+`7.0.0-alpha.23` adds support for:
+* Explicit server rendering
+* Support for decorators on server-rendered components
+
+`7.0.0-alpha.22` adds support for:
+* Action logging for function props
 
 `7.0.0-alpha.17` adds support for:
 * CSFv3 (object) stories – used by default
@@ -65,33 +74,6 @@ module.exports = {
   }
 };
 ```
-
-4) In your `.storybook/preview.js` you can configure the server url, and optionally provide a custom fetch function 
-   (e.g. one that uses `POST`);
-
-```js
-export const parameters = {
-  server: {
-    url: `http://localhost:3000/story`,
-    // fetchStoryHtml: customFetchStoryHtml,
-  },
-}
-```
-
-`fetchStoryHtml` should be an async function with the following signature
-
-```ts
-type FetchStoryHtmlType = (
-    url: string,
-    id: string,
-    params: any,
-    context: StoryContext
-  ) => Promise<string>;
-```
-* `url` – Server url configured by the `parameters.server.url`
-* `id` – Id of the story being rendered given by `parameters.server.id`
-* `params` – Merged story params `parameters.server.params` and story args
-* `context` – The context of the story
 
 5) Create a story file next to your Muban component:
 
@@ -187,38 +169,6 @@ export const Custom: Story<MyComponentProps> = {
 };
 ```
 
-Or render a server component:
-```ts
-import { html } from '@muban/muban';
-import type { Meta, Story } from '@muban/storybook';
-import { MyComponent } from './MyComponent';
-import type { MyComponentProps } from './MyComponent.template';
-
-// Most things are just normal storybook configuration
-export default {
-  title: 'My Component',
-  component: MyComponent,
-  argTypes: {
-    title: { control: 'text' },
-    content: { control: 'text' },
-  },
-} as Meta;
-
-// Render a server component template
-export const Server: Story<MyComponentProps> = {
-  parameters: {
-    server: {
-      id: 'myComponent',
-    },
-  },
-  args: {
-    title: 'Foo',
-    content: 'Bar'
-  }
-}
-```
-
-
 The following object makes up a Muban Storybook Component:
 
 * `component` – A reference to a Muban component that will be "initialized" with the template.
@@ -290,6 +240,140 @@ Either of the above parameters are optional.
   child story component as the component value.
 
 Have a look at the example [Decorator Stories](../example/src/Decorators.stories.ts) to see some more variations.
+
+## Server Rendering
+
+Server rendering can be enabled in two ways:
+1. Explicitly set the `globals.renderMode` to `server`.
+2. Not setting `globals.renderMode` at all, and providing all the required server configuration.
+
+If `globals.renderMode` is set to `server`, it will show errors when any of the required server configuration is 
+missing. 
+
+### Explicit `renderMode` switch
+
+To explicitly set the `renderMode` to `client` (default) or `server`, you should add this to the
+`.storybook/preview.js`:
+
+```ts
+export const globalTypes = {
+  renderMode: {
+    name: 'Render Mode',
+    description: 'Render template on the server or client',
+    defaultValue: 'client',
+    toolbar: {
+      icon: 'transfer',
+      items: ['client', 'server'],
+      dynamicTitle: true,
+    },
+  },
+};
+```
+
+### Server configuration `parameters`
+The following information can be provided:
+1. `parameters.server.url` – often set in the `.storybook/preview.js`:
+   ```ts
+   export const parameters = {
+     server: {
+       url: `http://localhost:3000/story`,
+     },
+   }
+   ```
+
+2. `parameters.server.id` – often set in the story `default export`, but can also be set on each individual story.
+   ```ts
+   export default {
+     title: 'My Component',
+     component: MyComponent,
+     // configures this as a server component
+     parameters: {
+       server: {
+         id: 'myComponent',
+       },
+     },
+   } as Meta;
+   ```
+
+3. `parameters.server.disabled` – Can be set to disable individual stories that should not be rendered on the server, 
+   or on a more global level to disable it for more or all stories.
+
+4. `parameters.server.fetchStoryHtml` – A custom function to do a fetch request that fetches the HTML from the 
+   server. The default function puts everything as GET parameters, but you might want something more custom to your 
+   server, like JSON encoding or a POST request.
+
+    ```ts
+    export const parameters = {
+      server: {
+        url: `http://localhost:3000/story`,
+        fetchStoryHtml: async (url, id, params, context) => {
+          return '<div>Hello world</div>';
+        },
+      },
+    }
+    ```
+
+    `fetchStoryHtml` should be an async function with the following signature:
+    ```ts
+    type FetchStoryHtmlType = (
+        url: string,
+        id: string,
+        params: any,
+        context: StoryContext
+      ) => Promise<string>;
+    ```
+   * `url` – Server url configured by the `parameters.server.url`
+   * `id` – Id of the story being rendered given by `parameters.server.id`
+   * `params` – Merged story params `parameters.server.params` and story `args`
+   * `context` – The context of the story
+
+
+A server rendered story could look like this:
+
+```ts
+import { html } from '@muban/muban';
+import type { Meta, Story } from '@muban/storybook';
+import { MyComponent } from './MyComponent';
+import type { MyComponentProps } from './MyComponent.template';
+
+// Most things are just normal storybook configuration
+export default {
+  title: 'My Component',
+  component: MyComponent,
+  argTypes: {
+    title: { control: 'text' },
+    content: { control: 'text' },
+  },
+  // configures this as a server component
+  parameters: {
+    server: {
+      id: 'myComponent',
+    },
+  },
+} as Meta;
+
+// Render a server component template
+export const ServerTemplateOnly: Story<MyComponentProps> = {
+  // no need to provide a render function if you don't need a component
+  args: {
+    title: 'Foo',
+    content: 'Bar'
+  }
+}
+
+// Render a server component template with local component
+export const ServerWithComponent: Story<MyComponentProps> = {
+  render() {
+    return {
+      component: MyComponent,
+    }
+  },
+  args: {
+    title: 'Foo',
+    content: 'Bar'
+  }
+}
+```
 
 ## Webpack Config
 
