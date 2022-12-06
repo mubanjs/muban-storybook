@@ -23,6 +23,10 @@ const addBorder = createDecoratorComponent(({ template }) => ({
 export const Simple: Story<TemplateStoryProps<typeof storyTemplate>> = {
   args: {
     initialValue: true,
+    data: {
+      name: 'John',
+      age: 42,
+    },
   },
 };
 

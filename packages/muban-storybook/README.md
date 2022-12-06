@@ -299,8 +299,8 @@ The following information can be provided:
    or on a more global level to disable it for more or all stories.
 
 4. `parameters.server.fetchStoryHtml` – A custom function to do a fetch request that fetches the HTML from the 
-   server. The default function puts everything as GET parameters, but you might want something more custom to your 
-   server, like JSON encoding or a POST request.
+   server. The default function puts everything as a JSON encoded string inside the `templateData` query parameter,
+5. but you might want something more custom to your server, a POST request.
 
     ```ts
     export const parameters = {

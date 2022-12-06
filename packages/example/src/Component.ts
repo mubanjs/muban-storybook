@@ -42,7 +42,10 @@ export const StoryComponent = defineComponent({
   },
 });
 
-export function storyTemplate({ initialValue }: { initialValue?: boolean }, ref?: string) {
+export function storyTemplate(
+  { initialValue, data }: { initialValue?: boolean; data?: any },
+  ref?: string,
+) {
   return html`<div data-component="story" data-initial-value=${String(initialValue)}>
     <div class="alert alert-primary">
       <h4 class="alert-heading">Instructions!</h4>
@@ -52,6 +55,7 @@ export function storyTemplate({ initialValue }: { initialValue?: boolean }, ref?
       Value:
       <span data-ref="label" class="badge rounded-pill bg-primary"></span>
     </div>
+    <div>${data}</div>
     <div style="margin-top: 20px">
       <button type="button" data-ref="btnToggle" class="btn btn-primary">Toggle</button>${' '}
       <button type="button" data-ref="btnEnable" class="btn btn-success">Enable</button>${' '}

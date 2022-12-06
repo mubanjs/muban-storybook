@@ -15,20 +15,36 @@ async function defaultFetchStoryHtml(
   storyContext: StoryContext<MubanFramework>,
 ): Promise<string> {
   const fetchUrl = new URL(`${url}/${path}`);
-  fetchUrl.search = new URLSearchParams({ ...storyContext.globals, ...params }).toString();
+  // there is a bug in storybook where values are "stored in the url",
+  // so if the page gets reloaded, boolean values are passed as strings
+  // here we look at the argType control and set them bac
+  const sanitizedParams = Object.fromEntries(
+    Object.entries(params).map(([key, value]) => [
+      key,
+      storyContext.argTypes[key].control.type === 'boolean'
+        ? value === true || value === 'true'
+        : value,
+    ]),
+  );
+
+  fetchUrl.search = new URLSearchParams({
+    ...storyContext.globals,
+    templateData: JSON.stringify(sanitizedParams),
+  }).toString();
 
   const response = await fetch(fetchUrl.toString());
   return response.text();
 }
 
-function buildStoryArgs(args: Args, argTypes: ArgTypes): Args {
+function getServerTemplateArgs(args: Args, argTypes: ArgTypes): Args {
   const storyArgs = { ...args };
 
   Object.keys(argTypes).forEach((key: string) => {
     const argType = argTypes[key];
-    const { control } = argType;
-    const controlType = control && control.type.toLowerCase();
+    const { control, action } = argType;
+    const controlType = (control && control.type.toLowerCase()) ?? (Boolean(action) && 'action');
     const argValue = storyArgs[key];
+
     switch (controlType) {
       case 'date':
         // For cross framework & language support we pick a consistent representation of Dates as strings
@@ -36,7 +52,11 @@ function buildStoryArgs(args: Args, argTypes: ArgTypes): Args {
         break;
       case 'object':
         // send objects as JSON strings
-        storyArgs[key] = JSON.stringify(argValue);
+        // storyArgs[key] = JSON.stringify(argValue);
+        break;
+      case 'action':
+        // don't send actions (functions)
+        delete storyArgs[key];
         break;
       default:
     }
@@ -129,7 +149,7 @@ server rendering (for this component/story).`,
     const {
       server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
     } = parameters;
-    const storyArgs = buildStoryArgs(args, argTypes);
+    const storyArgs = getServerTemplateArgs(args, argTypes);
     const fetchId = storyId || id;
     const storyParams = { ...params, ...storyArgs };
     serverTemplate = await fetchStoryHtml(url, fetchId, storyParams, storyContext);
