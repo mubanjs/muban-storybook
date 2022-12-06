@@ -21,7 +21,7 @@ async function defaultFetchStoryHtml(
   const sanitizedParams = Object.fromEntries(
     Object.entries(params).map(([key, value]) => [
       key,
-      storyContext.argTypes[key].control.type === 'boolean'
+      storyContext.argTypes[key]?.control?.type === 'boolean'
         ? value === true || value === 'true'
         : value,
     ]),
