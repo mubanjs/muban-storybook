@@ -14,7 +14,7 @@ async function defaultFetchStoryHtml(
   params: Record<string, unknown>,
   storyContext: StoryContext<MubanFramework>,
 ): Promise<string> {
-  const fetchUrl = new URL(`${url}/${path}`);
+  const fetchUrl = new URL(`${url}/${path}`, 'http://fallback');
   // there is a bug in storybook where values are "stored in the url",
   // so if the page gets reloaded, boolean values are passed as strings
   // here we look at the argType control and set them bac
@@ -32,7 +32,7 @@ async function defaultFetchStoryHtml(
     templateData: JSON.stringify(sanitizedParams),
   }).toString();
 
-  const response = await fetch(fetchUrl.toString());
+  const response = await fetch(fetchUrl.toString().replace('http://fallback', ''));
   return response.text();
 }
 
