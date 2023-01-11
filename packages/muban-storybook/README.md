@@ -2,9 +2,9 @@
 
 Storybook for Muban: View Muban components in isolation with Hot Reloading.
 
-> :warning: **FOR USE WITH `@mediamonks/muban-core`, USE VERSION `6.0.2`**
+> :warning: **FOR USE WITH `@mediamonks/muban-core`, USE VERSION `6.1.0`**
 >
-> The `@mediamonks/muban` version is this package works with version `6.0.2`.
+> The `@mediamonks/muban` version is this package works with version `6.1.0`.
 > From version `7` onwards, it will only work with `@mubanjs/muban`.
 
 This Storybook framework is based on `@storybook/html`, so almost everything you can do
@@ -30,9 +30,14 @@ The list below helps to see what version of storybook is included, so what featu
 | `7.0.0-alpha.16` | `6.4.9`           |
 | `7.0.0-alpha.15` | `6.1.21`          |
 
+`7.0.0-alpha.26` adds support for:
+* Multiple server configs
+* Server urls with without a host
+* Default story fetch implementations to use in your project
+
 `7.0.0-alpha.23` adds support for:
 * Explicit server rendering
-* Support for decorators on server-rendered components
+* Decorators on server-rendered components
 
 `7.0.0-alpha.22` adds support for:
 * Action logging for function props
@@ -270,62 +275,88 @@ export const globalTypes = {
 };
 ```
 
+It will generate a selector in the Storybook Toolbar to switch between all the given items at will.
+
+It's also possible to specify specific server configurations with the `'server:twig'` format, more on that later.
+
 ### Server configuration `parameters`
-The following information can be provided:
-1. `parameters.server.url` – often set in the `.storybook/preview.js`:
-   ```ts
-   export const parameters = {
-     server: {
-       url: `http://localhost:3000/story`,
-     },
-   }
-   ```
+The following information can be provided.
 
-2. `parameters.server.id` – often set in the story `default export`, but can also be set on each individual story.
-   ```ts
-   export default {
-     title: 'My Component',
-     component: MyComponent,
-     // configures this as a server component
-     parameters: {
-       server: {
-         id: 'myComponent',
-       },
-     },
-   } as Meta;
-   ```
+#### url
+`parameters.server.url` – often set in the `.storybook/preview.js`:
+```ts
+export const parameters = {
+ server: {
+   url: `http://localhost:3000/story`,
+ },
+}
+```
 
-3. `parameters.server.disabled` – Can be set to disable individual stories that should not be rendered on the server, 
-   or on a more global level to disable it for more or all stories.
+#### id
 
-4. `parameters.server.fetchStoryHtml` – A custom function to do a fetch request that fetches the HTML from the 
-   server. The default function puts everything as a JSON encoded string inside the `templateData` query parameter,
-5. but you might want something more custom to your server, a POST request.
+`parameters.server.id` – often set in the story `default export`, but can also be set on each individual story.
+```ts
+export default {
+ title: 'My Component',
+ component: MyComponent,
+ // configures this as a server component
+ parameters: {
+   server: {
+     id: 'myComponent',
+   },
+ },
+} as Meta;
+```
+#### disabled
 
-    ```ts
-    export const parameters = {
-      server: {
-        url: `http://localhost:3000/story`,
-        fetchStoryHtml: async (url, id, params, context) => {
-          return '<div>Hello world</div>';
-        },
-      },
-    }
-    ```
+`parameters.server.disabled` – Can be set to disable individual stories that should not be rendered on the server, 
+or on a more global level to disable it for more or all stories.
 
-    `fetchStoryHtml` should be an async function with the following signature:
-    ```ts
-    type FetchStoryHtmlType = (
-        url: string,
-        id: string,
-        params: any,
-        context: StoryContext
-      ) => Promise<string>;
-    ```
-   * `url` – Server url configured by the `parameters.server.url`
-   * `id` – Id of the story being rendered given by `parameters.server.id`
-   * `params` – Merged story params `parameters.server.params` and story `args`
-   * `context` – The context of the story
+#### fetchStoryHtml
+
+`parameters.server.fetchStoryHtml` – A custom function to do a fetch request that fetches the HTML from the 
+server. The default function puts everything as a JSON encoded string inside the `templateData` query parameter,
+
+But you might want something more custom to your server, a POST request.
+
+```ts
+export const parameters = {
+  server: {
+    url: `http://localhost:3000/story`,
+    fetchStoryHtml: async (url, id, params, context) => {
+      return '<div>Hello world</div>';
+    },
+  },
+}
+```
+
+`fetchStoryHtml` should be an async function with the following signature:
+```ts
+type FetchStoryHtmlType = (
+    url: string,
+    id: string,
+    params: any,
+    context: StoryContext
+  ) => Promise<string>;
+```
+* `url` – Server url configured by the `parameters.server.url`
+* `id` – Id of the story being rendered given by `parameters.server.id`
+* `params` – Merged story params `parameters.server.params` and story `args`
+* `context` – The context of the story
+
+The `@muban/storybook` package exports 3 implementations of this function:
+
+* `fetchStoryHtmlUsingUrlParams` – This will add all story parameters and args in the query string of the url. A 
+  downside of this is that the url can become very long, and might be rejected by the server, and also that the
+  parameters are all interpreted as strings, so you might need to do some extra parsing on the server side.
+
+* `fetchStoryHtmlUsingGetJson` – This is the default implementation, it will add all story args in the 
+  `templateData` query parameter, which is a JSON encoded string and will support primitive types. Other meta 
+  parameters that are not template args are added as normal query parameters.
+
+* `fetchStoryHtmlUsingPostJson` – A POST request that puts everything in as a JSON encoded string. It follows the 
+  same format as `fetchStoryHtmlUsingGetJson`, but it's a POST request instead of a GET request. The main 
+  benefit of this is that the url is not limited by the length of the query string.
 
 
 A server rendered story could look like this:
@@ -373,6 +404,55 @@ export const ServerWithComponent: Story<MyComponentProps> = {
     content: 'Bar'
   }
 }
+```
+
+### Multiple server configurations
+
+Sometimes you need to connect to different external servers for your templates, and want to switch between them.
+
+You can specify multiple configs for these servers where you enter the url and optionally a custom fetch function:
+
+```ts
+import { fetchStoryHtmlUsingPostJson } from '@muban/storybook/dist/cjs/client';
+
+export const parameters = {
+  server: {
+    // default url
+    url: `/story`,
+    // additional configs
+    configs: {
+      twig: {
+        // e.g. different port
+        url: `http://localhost:1234/story`
+      },
+      aem: {
+        // e.g. different path as well
+        url: `http://localhost:9876/api/story-base-path/`,
+        // and uses a different way of fetching the HTML from the server
+        fetchStoryHtml: fetchStoryHtmlUsingPostJson
+      }
+    }
+  },
+}
+```
+
+To select a specific server config, you can use the `renderMode` global parameter:
+```ts
+export const globalTypes = {
+  renderMode: {
+    name: 'Render Mode',
+    description: 'Render template on the server or client',
+    defaultValue: 'client',
+    toolbar: {
+      icon: 'transfer',
+      
+      // specify the configs you want to use with the `:configName` postfix
+      items: ['client', 'server:twig', 'server:aem'],
+      
+      dynamicTitle: true,
+    },
+  },
+};
 ```
 
 ## Webpack Config

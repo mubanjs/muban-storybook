@@ -1,69 +1,14 @@
 /* eslint-disable no-restricted-properties,@typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations,@typescript-eslint/naming-convention */
 import { createApp } from '@muban/muban';
 import type { App } from '@muban/muban';
-import type { ArgsStoryFn, StoryContext, Args, ArgTypes } from '@storybook/csf';
+import type { ArgsStoryFn } from '@storybook/csf';
 import { document } from 'global';
+import { fetchStoryHtmlUsingGetJson } from '../fetch/fetchGetJson';
+import { getServerTemplateArgs } from '../fetch/utils';
 import type { RenderContext, StoryFnMubanReturnType } from './types';
 import type { MubanFramework } from './types-6-0';
 
 const DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION = '__PLACEHOLDER__';
-
-async function defaultFetchStoryHtml(
-  url: string,
-  path: string,
-  params: Record<string, unknown>,
-  storyContext: StoryContext<MubanFramework>,
-): Promise<string> {
-  const fetchUrl = new URL(`${url}/${path}`, 'http://fallback');
-  // there is a bug in storybook where values are "stored in the url",
-  // so if the page gets reloaded, boolean values are passed as strings
-  // here we look at the argType control and set them bac
-  const sanitizedParams = Object.fromEntries(
-    Object.entries(params).map(([key, value]) => [
-      key,
-      storyContext.argTypes[key]?.control?.type === 'boolean'
-        ? value === true || value === 'true'
-        : value,
-    ]),
-  );
-
-  fetchUrl.search = new URLSearchParams({
-    ...storyContext.globals,
-    templateData: JSON.stringify(sanitizedParams),
-  }).toString();
-
-  const response = await fetch(fetchUrl.toString().replace('http://fallback', ''));
-  return response.text();
-}
-
-function getServerTemplateArgs(args: Args, argTypes: ArgTypes): Args {
-  const storyArgs = { ...args };
-
-  Object.keys(argTypes).forEach((key: string) => {
-    const argType = argTypes[key];
-    const { control, action } = argType;
-    const controlType = (control && control.type.toLowerCase()) ?? (Boolean(action) && 'action');
-    const argValue = storyArgs[key];
-
-    switch (controlType) {
-      case 'date':
-        // For cross framework & language support we pick a consistent representation of Dates as strings
-        storyArgs[key] = new Date(argValue).toISOString();
-        break;
-      case 'object':
-        // send objects as JSON strings
-        // storyArgs[key] = JSON.stringify(argValue);
-        break;
-      case 'action':
-        // don't send actions (functions)
-        delete storyArgs[key];
-        break;
-      default:
-    }
-  });
-
-  return storyArgs;
-}
 
 export const render: ArgsStoryFn<MubanFramework> = (props, context) => {
   const { id, component: Component } = context;
@@ -110,10 +55,12 @@ export async function renderToDom(
     app.component(...(componentStory.appComponents || []));
   }
 
+  const [renderMode, serverConfig] = globals.renderMode?.split(':') ?? [];
+
   // TODO: type correctly after returnType from `app.mount` is fixed in muban
   let componentInstance: any;
 
-  if (globals.renderMode === 'server') {
+  if (renderMode === 'server') {
     if (!options.storyContext.parameters.server?.url) {
       options.showError({
         title: `Server url is not configured`,
@@ -140,15 +87,23 @@ server rendering (for this component/story).`,
   }
 
   if (
-    globals.renderMode === 'server' ||
-    (!globals.renderMode &&
+    renderMode === 'server' ||
+    (!renderMode &&
       options.storyContext.parameters.server?.url &&
       options.storyContext.parameters.server?.id &&
       !options.storyContext.parameters.server?.disabled)
   ) {
     const {
-      server: { url, id: storyId, fetchStoryHtml = defaultFetchStoryHtml, params },
+      server: { id: storyId, params, configs },
     } = parameters;
+    let {
+      server: { url, fetchStoryHtml = fetchStoryHtmlUsingGetJson },
+    } = parameters;
+    if (serverConfig && configs[serverConfig]) {
+      url = configs[serverConfig].url || url;
+      fetchStoryHtml = configs[serverConfig].fetchStoryHtml || fetchStoryHtml;
+    }
+
     const storyArgs = getServerTemplateArgs(args, argTypes);
     const fetchId = storyId || id;
     const storyParams = { ...params, ...storyArgs };

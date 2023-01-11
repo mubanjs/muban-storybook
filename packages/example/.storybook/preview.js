@@ -1,8 +1,22 @@
+import {
+  fetchStoryHtmlUsingUrlParams,
+  fetchStoryHtmlUsingGetJson,
+  fetchStoryHtmlUsingPostJson,
+} from '@muban/storybook';
+
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
   server: {
-    url: `http://localhost:3000/story`,
-    // customFetchStoryHtml,
+    configs: {
+      twig: {
+        url: `http://localhost:3000/story`,
+      },
+      aem: {
+        url: 'http://localhost:4502/content/core-components-examples/library',
+      },
+    },
+    url: `/story`,
+    fetchStoryHtml: fetchStoryHtmlUsingPostJson,
   },
 };
 
@@ -14,11 +28,33 @@ export const globalTypes = {
     defaultValue: 'client',
     toolbar: {
       icon: 'transfer',
-      // Array of plain string values or MenuItem shape (see below)
-      items: ['client', 'server'],
-      // Property that specifies if the name of the item will be displayed
-      // showName: true,
-      // Change title based on selected value
+      items: [
+        {
+          title: 'Render on the client',
+          left: '🖥',
+          value: 'client',
+        },
+        {
+          title: 'Render on the server',
+          left: '🌎',
+          value: 'server',
+        },
+        {
+          title: 'Render on the server - Default',
+          left: '🌎',
+          value: 'server:default',
+        },
+        {
+          title: 'Render on the server - Twig',
+          left: '🌎',
+          value: 'server:twig',
+        },
+        {
+          title: 'Render AEM on the server - AEM',
+          left: '🌎',
+          value: 'server:aem',
+        },
+      ],
       dynamicTitle: true,
     },
   },
