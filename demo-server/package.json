@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "twig-server -d ./src/components -m /story -p 3000 -c"
   },
   "keywords": [],
   "author": "Arjan van Wijk",
@@ -14,5 +14,8 @@
     "cors": "^2.8.5",
     "express": "^4.17.2",
     "hbs": "^4.2.0"
+  },
+  "devDependencies": {
+    "@pota/twig-server": "^1.5.0"
   }
 }
