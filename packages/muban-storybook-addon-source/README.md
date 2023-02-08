@@ -3,9 +3,9 @@
 A storybook addon for Muban to view the source of your components in 4 panels.
 
 > :warning: **NOT YET COMPATIBLE WITH `@mubanjs/muban`**
-> 
-> This version of the package is not yet updated, and only works with the
-> legacy `@mediamonks/muban`.
+>
+> This version of the package is not yet updated, and only works with the legacy
+> `@mediamonks/muban`.
 
 ## Getting started
 
@@ -28,7 +28,7 @@ module.exports = {
     '@storybook/addon-essentials',
     '@storybook/addon-links',
     '@storybook/addon-storysource',
-    
+
     '@muban/storybook-addon-source', // add this to the list
   ],
 };
@@ -50,7 +50,7 @@ export default {
 
 Then you should see 4 new panels in Storybook, for each of the source types:
 
-* `template` - your hbs file
-* `style` - the scss file linked in your hbs
-* `script` - the ts file linked in your hbs
-* `data` - the data object
+- `template` - your hbs file
+- `style` - the scss file linked in your hbs
+- `script` - the ts file linked in your hbs
+- `data` - the data object

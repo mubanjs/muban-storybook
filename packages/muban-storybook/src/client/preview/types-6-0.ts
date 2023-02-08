@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations */
+/* eslint-disable @typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations,unicorn/filename-case */
 import type { ComponentFactory } from '@muban/muban';
 import type {
   Args as DefaultArgs,
@@ -11,7 +11,7 @@ import type { StoryFnMubanReturnType } from './types';
 export type { Args, ArgTypes, Parameters, StoryContext } from '@storybook/csf';
 
 export type MubanFramework = {
-  component: ComponentFactory<any>;
+  component: ComponentFactory;
   storyResult: StoryFnMubanReturnType;
 };
 

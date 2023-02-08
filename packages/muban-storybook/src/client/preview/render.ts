@@ -1,14 +1,14 @@
 /* eslint-disable no-restricted-properties,@typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations,@typescript-eslint/naming-convention */
 import { createApp } from '@muban/muban';
 import type { App } from '@muban/muban';
-import type { ArgsStoryFn } from '@storybook/csf';
+import type { Args, ArgsStoryFn, StrictArgTypes } from '@storybook/csf';
 import { document } from 'global';
 import { fetchStoryHtmlUsingGetJson } from '../fetch/fetchGetJson';
-import { getServerTemplateArgs } from '../fetch/utils';
 import type { RenderContext, StoryFnMubanReturnType } from './types';
 import type { MubanFramework } from './types-6-0';
-
-const DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION = '__PLACEHOLDER__';
+import { getInjectedServerTemplate } from './utils/getInjectedServerTemplate';
+import { getClientTemplateArgs, getServerTemplateArgs } from './utils/getTemplateArgs';
+import { parseServerConfig } from './utils/parseServerConfig';
 
 export const render: ArgsStoryFn<MubanFramework> = (props, context) => {
   const { id, component: Component } = context;
@@ -40,58 +40,36 @@ export async function renderToDom(
   const componentStory = storyFn(args as any) as StoryFnMubanReturnType;
   showMain();
 
-  const data = (componentStory.data ? componentStory.data : args) || {};
+  const data = (componentStory.data ?? args) || {};
 
   // eslint-disable-next-line no-param-reassign
-  (domElement as HTMLElement).innerText = '';
+  (domElement as HTMLElement).textContent = '';
   const container = document.createElement('div');
-  domElement.appendChild(container);
+  domElement.append(container);
 
   let serverTemplate = '';
 
   let app: App | undefined;
   if (componentStory.component) {
     app = createApp(componentStory.component);
-    app.component(...(componentStory.appComponents || []));
+    app.component(...(componentStory.appComponents ?? []));
   }
 
-  const [renderMode, serverConfig] = globals.renderMode?.split(':') ?? [];
+  const { renderMode, serverConfig } = parseServerConfig(globals);
 
   // TODO: type correctly after returnType from `app.mount` is fixed in muban
   let componentInstance: any;
 
-  if (renderMode === 'server') {
-    if (!options.storyContext.parameters.server?.url) {
-      options.showError({
-        title: `Server url is not configured`,
-        description: `You've chosen server rendering, but "parameters.server.url" is not configured.`,
-      });
-      return;
-    }
-    if (!options.storyContext.parameters.server?.id) {
-      options.showError({
-        title: `Server story id is not configured`,
-        description: `You've chosen server rendering, but "parameters.server.id" is not configured for your story,
-which means the server doesn't know which template to render.`,
-      });
-      return;
-    }
-    if (options.storyContext.parameters.server?.disabled) {
-      options.showError({
-        title: `Server rendering is disabled`,
-        description: `You've chosen server rendering, but "parameters.server.disabled" is set to disallow
-server rendering (for this component/story).`,
-      });
-      return;
-    }
+  if (renderMode === 'server' && !validateServerConfig(options)) {
+    return;
   }
 
   if (
     renderMode === 'server' ||
     (!renderMode &&
-      options.storyContext.parameters.server?.url &&
-      options.storyContext.parameters.server?.id &&
-      !options.storyContext.parameters.server?.disabled)
+      storyContext.parameters.server?.url &&
+      storyContext.parameters.server?.id &&
+      !storyContext.parameters.server?.disabled)
   ) {
     const {
       server: { id: storyId, params, configs },
@@ -104,58 +82,20 @@ server rendering (for this component/story).`,
       fetchStoryHtml = configs[serverConfig].fetchStoryHtml || fetchStoryHtml;
     }
 
-    const storyArgs = getServerTemplateArgs(args, argTypes);
+    const sanitizedStoryArgs = getServerTemplateArgs(data, argTypes);
     const fetchId = storyId || id;
-    const storyParams = { ...params, ...storyArgs };
+    const storyParams = { ...params, ...sanitizedStoryArgs };
     serverTemplate = await fetchStoryHtml(url, fetchId, storyParams, storyContext);
 
     if (serverTemplate) {
-      const getInjectedServerTemplate = () => {
-        // render story template without decorators
-        const undecoratedTemplateResult = []
-          .concat(undecoratedStoryFn(storyContext).template(data) as any)
-          .join('');
-
-        // render everything
-        const fullTemplateResult = [].concat(componentStory.template(data) as any).join('');
-
-        // if both are equal, there are no decorators, and we can just render the serverTemplate
-        if (undecoratedTemplateResult === fullTemplateResult) {
-          return serverTemplate;
-        }
-
-        if (
-          undecoratedTemplateResult === '' &&
-          fullTemplateResult.includes(DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION)
-        ) {
-          return fullTemplateResult.replace(
-            DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
-            serverTemplate,
-          );
-        }
-
-        // remove the story from the complete output, leaving just the decorators, with a __PLACEHOLDER__
-        const decoratorWithPlaceholder = fullTemplateResult.replace(
-          undecoratedTemplateResult,
-          DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
-        );
-
-        if (!decoratorWithPlaceholder.includes(DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION)) {
-          options.showError({
-            title: `Something is wrong with the story and decorators`,
-            description: `Failed to extract the story from the decorators, so the server-rendered template cannot be included.
-          Are you passing custom props from the decorator template to your story template that change how it renders?`,
-          });
-          return null;
-        }
-
-        return decoratorWithPlaceholder.replace(
-          DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION,
-          serverTemplate,
-        );
-      };
-
-      const finalServerTemplate = getInjectedServerTemplate();
+      const finalServerTemplate = getInjectedServerTemplate(
+        undecoratedStoryFn,
+        storyContext,
+        data,
+        componentStory,
+        serverTemplate,
+        options,
+      );
 
       if (finalServerTemplate) {
         container.innerHTML = finalServerTemplate;
@@ -169,30 +109,20 @@ server rendering (for this component/story).`,
     }
   } else {
     // create a full muban app
-    // eslint-disable-next-line no-lonely-if
+
+    const sanitizedStoryArgs = getClientTemplateArgs(data, argTypes);
+
     if (app) {
-      componentInstance = app.mount(container, componentStory.template, data);
+      // the `app.mount` types are wrong here
+      // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
+      componentInstance = app.mount(container, componentStory.template, sanitizedStoryArgs);
     } else {
       // only render the basic template
-      container.innerHTML = [].concat(componentStory.template(data) as any).join('');
+      container.innerHTML = [componentStory.template(sanitizedStoryArgs) as any].flat().join('');
     }
   }
 
-  // if we were able to mount a component,
-  // then pass the action props to it,
-  // so it can call the action handlers to show in the actions panel
-  if (componentInstance) {
-    // filter out all arg names that are action types
-    const actionArgs = Object.entries(argTypes)
-      .filter(([, { action }]) => !!action)
-      .map(([actionName]) => actionName);
-
-    // filter args that are actions
-    const actionProps = Object.fromEntries(
-      Object.entries(args).filter(([argName]) => actionArgs.includes(argName)),
-    );
-    componentInstance.setProps(actionProps);
-  }
+  applyActionArgs(componentInstance, argTypes, args);
 
   // options.showError({
   //   title: `Expecting an HTML snippet or DOM node from the story: "${name}" of "${kind}".`,
@@ -201,4 +131,50 @@ server rendering (for this component/story).`,
   //       Use "() => <your snippet or node>" or when defining the story.
   //     `,
   // });
+}
+function validateServerConfig(options: RenderContext<MubanFramework>): boolean {
+  if (!options.storyContext.parameters.server?.url) {
+    options.showError({
+      title: `Server url is not configured`,
+      description: `You've chosen server rendering, but "parameters.server.url" is not configured.`,
+    });
+    return false;
+  }
+  if (!options.storyContext.parameters.server?.id) {
+    options.showError({
+      title: `Server story id is not configured`,
+      description: `You've chosen server rendering, but "parameters.server.id" is not configured for your story,
+which means the server doesn't know which template to render.`,
+    });
+    return false;
+  }
+  if (options.storyContext.parameters.server?.disabled) {
+    options.showError({
+      title: `Server rendering is disabled`,
+      description: `You've chosen server rendering, but "parameters.server.disabled" is set to disallow
+server rendering (for this component/story).`,
+    });
+    return false;
+  }
+  return true;
+}
+
+function applyActionArgs(componentInstance: any, argTypes: StrictArgTypes, args: Args): void {
+  // if we were able to mount a component,
+  // then pass the action props to it,
+  // so it can call the action handlers to show in the actions panel
+  if (componentInstance) {
+    // filter out all arg names that are action types
+    const actionArgs = new Set(
+      Object.entries(argTypes)
+        .filter(([, { action }]) => Boolean(action))
+        .map(([actionName]) => actionName),
+    );
+
+    // filter args that are actions
+    const actionProps = Object.fromEntries(
+      Object.entries(args).filter(([argName]) => actionArgs.has(argName)),
+    );
+    componentInstance.setProps(actionProps);
+  }
 }

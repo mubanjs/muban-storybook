@@ -18,7 +18,7 @@ const useSource = (type: SourceType) => {
   return type === 'data' ? JSON.stringify(sourceParam.data || {}, null, 2) : source[type] || '';
 };
 
-addons.register(ADDON_ID, api => {
+addons.register(ADDON_ID, (api) => {
   addons.add(`${PANEL_ID}-template`, {
     type: types.PANEL,
     title: 'Template Source',

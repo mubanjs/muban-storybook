@@ -6,7 +6,7 @@ import type { ComponentTemplate } from '@muban/template';
 export type { RenderContext } from '@storybook/core';
 
 export type StoryFnMubanReturnType = {
-  component?: ComponentFactory<any>;
+  component?: ComponentFactory;
   template: ComponentTemplate;
   data?: any;
   appComponents?: Array<ComponentFactory | LazyComponent>;
@@ -16,7 +16,7 @@ export type TemplateStoryProps<Template extends ComponentTemplate> = Parameters<
 
 export interface IStorybookStory {
   name: string;
-  render: (context: any) => any;
+  render(context: any): any;
 }
 
 export interface IStorybookSection {

@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any,unicorn/filename-case */
+
 // import type { Configuration } from 'webpack';
 
 // Add default webpack config for all muban storybook installations

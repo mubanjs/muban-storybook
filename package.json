@@ -1,7 +1,171 @@
 {
   "private": true,
   "name": "muban-storybook",
+  "type": "module",
   "workspaces": [
     "./packages/*"
-  ]
+  ],
+  "scripts": {
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:eslint": "npm run lint:eslint --workspaces --if-present",
+    "fix": "npm run fix --workspaces --if-present",
+    "format": "prettier \"./**/*.{ts,js,tsx,jsx,md,json,yml}\" \"!./**/dist/**/*.*\" --write",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@mediamonks/eslint-config": "^2.0.7",
+    "@mediamonks/eslint-config-react": "^2.1.12",
+    "@mediamonks/eslint-config-typescript": "^1.0.9",
+    "@mediamonks/eslint-config-typescript-react": "^1.0.11",
+    "@mediamonks/prettier-config": "^1.0.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.1",
+    "prettier": "^2.8.3",
+    "typescript": "^4.9.5"
+  },
+  "prettier": "@mediamonks/prettier-config",
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "*.js"
+        ],
+        "extends": [
+          "@mediamonks/eslint-config"
+        ]
+      },
+      {
+        "files": [
+          "*.ts"
+        ],
+        "parserOptions": {
+          "project": "./tsconfig.json"
+        },
+        "extends": [
+          "@mediamonks/eslint-config",
+          "@mediamonks/eslint-config-typescript"
+        ]
+      },
+      {
+        "files": [
+          "*.tsx"
+        ],
+        "parserOptions": {
+          "project": "./tsconfig.json"
+        },
+        "extends": [
+          "@mediamonks/eslint-config",
+          "@mediamonks/eslint-config-react",
+          "@mediamonks/eslint-config-typescript",
+          "@mediamonks/eslint-config-typescript-react"
+        ]
+      },
+      {
+        "files": [
+          "**/src/server/**/*.ts"
+        ],
+        "rules": {
+          "unicorn/prefer-module": "off",
+          "@typescript-eslint/no-require-imports": "off",
+          "@typescript-eslint/no-var-requires": "off"
+        }
+      },
+      {
+        "files": [
+          "**/src/server/**/*.tsx"
+        ],
+        "rules": {
+          "unicorn/prefer-module": "off",
+          "@typescript-eslint/no-require-imports": "off",
+          "@typescript-eslint/no-var-requires": "off"
+        }
+      },
+      {
+        "files": [
+          "**/src/**/*.ts"
+        ],
+        "rules": {
+          "unicorn/prevent-abbreviations": "off",
+          "@typescript-eslint/naming-convention": [
+            "error",
+            {
+              "selector": "default",
+              "format": [
+                "strictCamelCase"
+              ],
+              "leadingUnderscore": "allow",
+              "trailingUnderscore": "forbid"
+            },
+            {
+              "selector": [
+                "typeLike",
+                "enumMember"
+              ],
+              "format": [
+                "StrictPascalCase"
+              ],
+              "custom": {
+                "regex": "^[A-Z]{2}",
+                "match": false
+              },
+              "leadingUnderscore": "forbid",
+              "trailingUnderscore": "forbid"
+            },
+            {
+              "selector": "variable",
+              "modifiers": [
+                "exported"
+              ],
+              "format": [
+                "strictCamelCase",
+                "StrictPascalCase"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "*.stories.ts",
+          "*.test.ts"
+        ],
+        "rules": {
+          "@typescript-eslint/naming-convention": [
+            "error",
+            {
+              "selector": "default",
+              "format": [
+                "strictCamelCase"
+              ],
+              "leadingUnderscore": "allow",
+              "trailingUnderscore": "forbid"
+            },
+            {
+              "selector": [
+                "typeLike",
+                "enumMember"
+              ],
+              "format": [
+                "StrictPascalCase"
+              ],
+              "custom": {
+                "regex": "^[A-Z]{2}",
+                "match": false
+              },
+              "leadingUnderscore": "forbid",
+              "trailingUnderscore": "forbid"
+            },
+            {
+              "selector": "variable",
+              "format": [
+                "strictCamelCase",
+                "StrictPascalCase"
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
 }

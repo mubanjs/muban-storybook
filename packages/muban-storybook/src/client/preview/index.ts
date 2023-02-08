@@ -1,7 +1,6 @@
 /* eslint-disable prefer-destructuring,@typescript-eslint/no-explicit-any,unicorn/prevent-abbreviations */
-import { start } from '@storybook/core/client';
 import type { ClientStoryApi, Loadable } from '@storybook/addons';
-
+import { start } from '@storybook/core/client';
 import './globals';
 import { render, renderToDom } from './render';
 import type { StoryFnMubanReturnType, IStorybookSection } from './types';
@@ -10,11 +9,13 @@ const framework = 'muban';
 
 interface ClientApi extends ClientStoryApi<StoryFnMubanReturnType> {
   setAddon(addon: any): void;
+  // eslint-disable-next-line unicorn/prefer-module
   configure(loader: Loadable, module: NodeModule): void;
   getStorybook(): Array<IStorybookSection>;
   clearDecorators(): void;
   forceReRender(): void;
-  raw: () => any; // todo add type
+  // todo add type
+  raw(): any;
 }
 
 const api = start(renderToDom, { render });
@@ -24,7 +25,9 @@ export const storiesOf: ClientApi['storiesOf'] = (kind, m) =>
     framework,
   });
 
-export const configure: ClientApi['configure'] = (...args) => api.configure(framework, ...args);
+export const configure: ClientApi['configure'] = (...args) => {
+  api.configure(framework, ...args);
+};
 export const addDecorator = api.clientApi.addDecorator as ClientApi['addDecorator'];
 export const addParameters = api.clientApi.addParameters as ClientApi['addParameters'];
 export const clearDecorators: ClientApi['clearDecorators'] = api.clientApi.clearDecorators;
