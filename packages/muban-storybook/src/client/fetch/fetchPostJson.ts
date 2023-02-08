@@ -11,6 +11,12 @@ export async function fetchStoryHtmlUsingPostJson(
 
   const response = await fetch(fetchUrl.toString().replace('http://fallback', ''), {
     method: 'POST',
+    headers: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Accept: 'text/html',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({
       ...storyContext.globals,
       templateData: parameters,
