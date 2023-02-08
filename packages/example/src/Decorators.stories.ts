@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { bind, computed, defineComponent, inject, provide } from '@muban/muban';
 import type { TemplateStoryProps, Story, Meta } from '@muban/storybook';
 import { createDecoratorComponent } from '@muban/storybook';
@@ -20,10 +21,12 @@ export const TemplateOnly: Story<TemplateStoryProps<typeof storyTemplate>> = {
   },
   decorators: [
     createDecoratorComponent<TemplateStoryProps<typeof storyTemplate>>(({ template }) => ({
-      template: () => html`<div style="background-color: lightblue">
-        <h1>Wrapper</h1>
-        ${template}
-      </div>`,
+      template: () => html`
+        <div style="background-color: lightblue">
+          <h1>Wrapper</h1>
+          ${template}
+        </div>
+      `,
     })),
   ],
 };
@@ -40,9 +43,12 @@ export const ComponentOnly: Story = {
         return [bind(refs.info, { text: computed(() => value) })];
       },
     }),
-    template: () => html`<div data-component="context-test">
-      Context value: <span data-ref="info"></span>
-    </div>`,
+    template: () => html`
+      <div data-component="context-test">
+        <p>Should display "foobar" as context value, which is coming from the decorator.</p>
+        Context value: <span data-ref="info"></span>
+      </div>
+    `,
   }),
   args: {
     initialValue: false,
@@ -73,9 +79,15 @@ export const ComponentAndTemplate: Story = {
         return [bind(refs.info, { text: computed(() => value) })];
       },
     }),
-    template: () => html`<div data-component="context-test">
-      Context value: <span data-ref="info"></span>
-    </div>`,
+    template: () => html`
+      <div data-component="context-test">
+        <p>
+          Should have a blue background, and display "foobar" as context value, which is coming from
+          the decorator.
+        </p>
+        Context value: <span data-ref="info"></span>
+      </div>
+    `,
   }),
   args: {
     initialValue: false,
@@ -90,10 +102,12 @@ export const ComponentAndTemplate: Story = {
           return [];
         },
       }),
-      template: () => html`<div data-component="context" style="background-color: lightblue">
-        <h1>Wrapper</h1>
-        ${template}
-      </div>`,
+      template: () => html`
+        <div data-component="context" style="background-color: lightblue">
+          <h1>Wrapper</h1>
+          ${template}
+        </div>
+      `,
     })),
   ],
 };

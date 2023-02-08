@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires,import/no-unresolved
 const packageJson = require('../../../package.json');
 
 export default {

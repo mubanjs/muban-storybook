@@ -1,6 +1,5 @@
-/* eslint-disable unicorn/prevent-abbreviations */
+/* eslint-disable unicorn/prevent-abbreviations,unicorn/filename-case */
 import type { Args as DefaultArgs } from '@storybook/csf';
-
 import type { StoryObj } from './types-6-0';
 
 export type { StoryFn, StoryObj, Meta } from './types-6-0';

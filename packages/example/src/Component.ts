@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useToggle } from '@muban/hooks';
 import { bind, defineComponent, propType } from '@muban/muban';
 import { html } from '@muban/template';
@@ -43,23 +44,27 @@ export const StoryComponent = defineComponent({
 });
 
 export function storyTemplate(
-  { initialValue, data }: { initialValue?: boolean; data?: any },
+  { initialValue, data, onToggle }: { initialValue?: boolean; data?: any; onToggle?(): void },
   ref?: string,
-) {
-  return html`<div data-component="story" data-initial-value=${String(initialValue)}>
-    <div class="alert alert-primary">
-      <h4 class="alert-heading">Instructions!</h4>
-      <p class="mb-0">When clicking the buttons, the value should update accordingly.</p>
+): string {
+  return html`
+    <div data-component="story" data-initial-value=${String(initialValue)} data-ref=${ref}>
+      <div class="alert alert-primary">
+        <h4 class="alert-heading">Instructions!</h4>
+        <p class="mb-0">When clicking the buttons, the value should update accordingly.</p>
+      </div>
+      <div>
+        Value:
+        <span data-ref="label" class="badge rounded-pill bg-primary"></span>
+      </div>
+      <div>${data}</div>
+      <div style="margin-top: 20px">
+        <button type="button" data-ref="btnToggle" class="btn btn-primary" onToggle=${onToggle}>
+          Toggle</button
+        >${' '}
+        <button type="button" data-ref="btnEnable" class="btn btn-success">Enable</button>${' '}
+        <button type="button" data-ref="btnDisable" class="btn btn-danger">Disable</button>
+      </div>
     </div>
-    <div>
-      Value:
-      <span data-ref="label" class="badge rounded-pill bg-primary"></span>
-    </div>
-    <div>${data}</div>
-    <div style="margin-top: 20px">
-      <button type="button" data-ref="btnToggle" class="btn btn-primary">Toggle</button>${' '}
-      <button type="button" data-ref="btnEnable" class="btn btn-success">Enable</button>${' '}
-      <button type="button" data-ref="btnDisable" class="btn btn-danger">Disable</button>
-    </div>
-  </div>`;
+  `;
 }
