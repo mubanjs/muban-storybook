@@ -42,7 +42,7 @@
     "react-dom": "*"
   },
   "dependencies": {
-    "@storybook/addon-docs": "^6.4.9",
+    "@storybook/addon-docs": "^7.0.2",
     "@storybook/addons": "^6.4.9",
     "@storybook/core": "^6.4.9",
     "react": "^16.8.3"
