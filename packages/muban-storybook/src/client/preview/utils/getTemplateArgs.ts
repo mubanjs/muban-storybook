@@ -9,6 +9,10 @@ export function processStoryArgs(
   const storyArguments = { ...args };
 
   for (const key of Object.keys(argumentTypes)) {
+    if (storyArguments[key] === undefined) {
+      continue;
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const argumentType = argumentTypes[key]!;
     const { control, action } = argumentType;
