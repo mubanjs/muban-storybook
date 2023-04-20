@@ -44,11 +44,21 @@ export const StoryComponent = defineComponent({
 });
 
 export function storyTemplate(
-  { initialValue, data, onToggle }: { initialValue?: boolean; data?: any; onToggle?(): void },
+  {
+    initialValue,
+    data,
+    onToggle,
+    ...rest
+  }: { initialValue?: boolean; data?: any; onToggle?(): void },
   ref?: string,
 ): string {
   return html`
-    <div data-component="story" data-initial-value=${String(initialValue)} data-ref=${ref}>
+    <div
+      data-component="story"
+      data-initial-value=${String(initialValue)}
+      data-ref=${ref}
+      ...${rest}
+    >
       <div class="alert alert-primary">
         <h4 class="alert-heading">Instructions!</h4>
         <p class="mb-0">When clicking the buttons, the value should update accordingly.</p>

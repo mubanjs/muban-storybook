@@ -1,4 +1,5 @@
-import type { Story } from '@muban/storybook';
+import type { Story, TemplateStoryProps } from '@muban/storybook';
+import { createDecoratorComponent } from '@muban/storybook';
 import { html } from '@muban/template';
 import { StoryComponent, storyTemplate } from './Component';
 
@@ -41,7 +42,26 @@ export const Server: Story<StoryTemplateProps> = {
   ...Client,
   parameters: {
     server: {
-      id: 'toggleExpand',
+      id: 'useToggle',
+    },
+  },
+};
+
+export const ServerWithDecorator: Story<StoryTemplateProps> = {
+  ...Client,
+  decorators: [
+    createDecoratorComponent<TemplateStoryProps<typeof storyTemplate>>(({ template }) => ({
+      template: () => html`
+        <div style="background-color: lightblue">
+          <h1>Wrapper</h1>
+          ${template}
+        </div>
+      `,
+    })),
+  ],
+  parameters: {
+    server: {
+      id: 'useToggle',
     },
   },
 };
