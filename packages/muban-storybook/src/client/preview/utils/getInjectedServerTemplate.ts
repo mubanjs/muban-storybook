@@ -6,6 +6,7 @@ import type {
 } from '../types';
 import type { MubanFramework } from '../types-6-0';
 import { DECORATOR_PLACEHOLDER_FOR_SERVER_INJECTION } from './createDecoratorComponent';
+import { getClientTemplateArgs } from './getTemplateArgs';
 
 export function getInjectedServerTemplate(
   // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -18,7 +19,11 @@ export function getInjectedServerTemplate(
   options: RenderContext<MubanFramework>,
 ): string | null {
   // render story template without decorators
-  const undecoratedTemplateResult = [undecoratedStoryFunction(storyContext).template(data) as any]
+  const undecoratedTemplateResult = [
+    undecoratedStoryFunction(storyContext).template(
+      getClientTemplateArgs(data, storyContext.argTypes),
+    ) as any,
+  ]
     .flat()
     .join('');
 
