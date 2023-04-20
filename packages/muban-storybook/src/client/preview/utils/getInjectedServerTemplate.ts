@@ -18,17 +18,16 @@ export function getInjectedServerTemplate(
   serverTemplate: string,
   options: RenderContext<MubanFramework>,
 ): string | null {
+  const sanitizedData = getClientTemplateArgs(data, storyContext.argTypes);
   // render story template without decorators
   const undecoratedTemplateResult = [
-    undecoratedStoryFunction(storyContext).template(
-      getClientTemplateArgs(data, storyContext.argTypes),
-    ) as any,
+    undecoratedStoryFunction(storyContext).template(sanitizedData) as any,
   ]
     .flat()
     .join('');
 
   // render everything
-  const fullTemplateResult = [componentStory.template(data) as any].flat().join('');
+  const fullTemplateResult = [componentStory.template(sanitizedData) as any].flat().join('');
 
   // if both are equal, there are no decorators, and we can just render the serverTemplate
   if (undecoratedTemplateResult === fullTemplateResult) {
