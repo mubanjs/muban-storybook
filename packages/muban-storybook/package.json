@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "description": "Storybook for Muban: View Muban components in isolation with Hot Reloading.",
   "keywords": [
     "muban",
