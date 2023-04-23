@@ -18,7 +18,7 @@
     "@muban/storybook": "^7.0.0-alpha.20",
     "@muban/template": "^1.0.0-alpha.4",
     "@storybook/addon-actions": "^6.5.13",
-    "@storybook/addon-essentials": "^6.5.13",
+    "@storybook/addon-essentials": "^7.0.6",
     "@storybook/addon-links": "^6.5.13",
     "@storybook/addon-postcss": "^2.0.0",
     "@storybook/builder-webpack5": "^6.5.13",
