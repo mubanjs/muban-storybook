@@ -9,20 +9,21 @@
     "lint": "npm run lint --workspaces --if-present",
     "lint:eslint": "npm run lint:eslint --workspaces --if-present",
     "fix": "npm run fix --workspaces --if-present",
-    "format": "prettier \"./**/*.{ts,js,tsx,jsx,md,json,yml}\" \"!./**/dist/**/*.*\" --write",
+    "format": "prettier \"./**/*.{mjs,cjs,js,jsx,ts,tsx,json,md,mdx,css,scss,html}\" --write --loglevel warn",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "prepare": "husky install"
   },
   "devDependencies": {
-    "@mediamonks/eslint-config": "^2.0.7",
-    "@mediamonks/eslint-config-react": "^2.1.12",
-    "@mediamonks/eslint-config-typescript": "^1.0.9",
-    "@mediamonks/eslint-config-typescript-react": "^1.0.11",
+    "@mediamonks/eslint-config": "^2.1.0",
+    "@mediamonks/eslint-config-react": "^2.2.0",
+    "@mediamonks/eslint-config-typescript": "^1.1.1",
+    "@mediamonks/eslint-config-typescript-react": "^1.0.12",
     "@mediamonks/prettier-config": "^1.0.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.1",
-    "prettier": "^2.8.3",
-    "typescript": "^4.9.5"
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
   },
   "prettier": "@mediamonks/prettier-config",
   "eslintConfig": {
@@ -60,26 +61,6 @@
           "@mediamonks/eslint-config-typescript",
           "@mediamonks/eslint-config-typescript-react"
         ]
-      },
-      {
-        "files": [
-          "**/src/server/**/*.ts"
-        ],
-        "rules": {
-          "unicorn/prefer-module": "off",
-          "@typescript-eslint/no-require-imports": "off",
-          "@typescript-eslint/no-var-requires": "off"
-        }
-      },
-      {
-        "files": [
-          "**/src/server/**/*.tsx"
-        ],
-        "rules": {
-          "unicorn/prefer-module": "off",
-          "@typescript-eslint/no-require-imports": "off",
-          "@typescript-eslint/no-var-requires": "off"
-        }
       },
       {
         "files": [

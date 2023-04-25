@@ -1,14 +1,15 @@
-import type { TemplateStoryProps, StoryObj, Story, Meta } from '@muban/storybook';
-import { StoryComponent, storyTemplate } from './Component';
-import { argTypes } from './StoryComponent.argTypes';
+import type { StoryObj, Meta } from '@muban/storybook';
+import { StoryComponent, storyTemplate } from './resources/Component.js';
+import { argTypes } from './resources/StoryComponent.argTypes.js';
 
 export default {
   title: 'CSF v3',
   argTypes,
-} as Meta;
+} satisfies Meta;
 
-// Storybook 7.x Story Object - CSFv3
-export const ClientObj: StoryObj<TemplateStoryProps<typeof storyTemplate>> = {
+type Story = StoryObj<typeof storyTemplate>;
+
+export const ClientStory: Story = {
   render: () => ({
     component: StoryComponent,
     template: storyTemplate,
@@ -18,19 +19,7 @@ export const ClientObj: StoryObj<TemplateStoryProps<typeof storyTemplate>> = {
   },
 };
 
-// Imported from types-7-0 - render on the client
-export const ClientStory: Story<TemplateStoryProps<typeof storyTemplate>> = {
-  render: () => ({
-    component: StoryComponent,
-    template: storyTemplate,
-  }),
-  args: {
-    initialValue: false,
-  },
-};
-
-// Custom data
-export const CustomData: Story<TemplateStoryProps<typeof storyTemplate>> = {
+export const CustomData: Story = {
   render: (args) => ({
     component: StoryComponent,
     template: storyTemplate,

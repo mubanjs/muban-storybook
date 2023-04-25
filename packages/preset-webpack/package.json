@@ -1,0 +1,67 @@
+{
+  "name": "@muban/storybook-preset-webpack",
+  "version": "8.0.0",
+  "description": "Storybook for Muban: The webpack preset.",
+  "keywords": [
+    "muban",
+    "storybook",
+    "webpack",
+    "preset"
+  ],
+  "author": "Arjan van Wijk",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/@mubanjs/muban-storybook.git"
+  },
+  "bugs": {
+    "url": "https://github.com/@mubanjs/muban-storybook/issues"
+  },
+  "homepage": "https://github.com/mubanjs/muban-storybook/tree/main/packages/preset-webpack#readme",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./preset": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "*.js",
+    "*.d.ts"
+  ],
+  "scripts": {
+    "dev": "npm run build -- --watch",
+    "build": "tsc -p ./tsconfig.json",
+    "typecheck": "tsc --project tsconfig.json --noEmit --noUnusedLocals",
+    "lint": "npm-run-all lint:*",
+    "lint:eslint": "eslint --ext .js,.jsx,.ts,.tsx,.mjs,.cjs,.mts,.cts . --cache --cache-location node_modules/.cache/.eslintcache",
+    "fix": "npm-run-all fix:*",
+    "fix:eslint": "npm run lint:eslint -- --fix",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@storybook/core-webpack": "7.0.6",
+    "@types/node": "^16.0.0",
+    "webpack": "5"
+  },
+  "devDependencies": {
+    "ts-loader": "^9.4.2",
+    "typescript": "~5.0.4"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

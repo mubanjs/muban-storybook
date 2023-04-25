@@ -1,15 +1,17 @@
-import type { TemplateStoryProps, StoryFn, Meta } from '@muban/storybook';
-import { StoryComponent, storyTemplate } from './Component';
-import { argTypes } from './StoryComponent.argTypes';
+import type { StoryFn, Meta } from '@muban/storybook';
+import { StoryComponent, storyTemplate } from './resources/Component.js';
+import { argTypes } from './resources/StoryComponent.argTypes.js';
+
+type Story = StoryFn<typeof storyTemplate>;
 
 export default {
   title: 'Legacy',
-  component: StoryComponent,
+  component: { component: StoryComponent, template: storyTemplate },
   argTypes,
-} as Meta;
+} satisfies Meta;
 
 // Storybook 6.x Story function - CSFv2
-export const ClientFn: StoryFn<TemplateStoryProps<typeof storyTemplate>> = () => ({
+export const ClientFn: Story = () => ({
   component: StoryComponent,
   template: storyTemplate,
 });

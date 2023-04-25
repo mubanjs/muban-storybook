@@ -1,7 +1,7 @@
-import type { Story, TemplateStoryProps } from '@muban/storybook';
+import type { Meta, StoryObj } from '@muban/storybook';
 import { createDecoratorComponent } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, storyTemplate } from './Component';
+import { StoryComponent, storyTemplate } from './resources/Component.js';
 
 export default {
   title: 'ArgTypes',
@@ -25,20 +25,19 @@ export default {
     date: { name: 'date', control: 'date' },
     onClick: { name: 'onClick', action: 'onToggle' },
   },
-};
+} satisfies Meta;
 
-type StoryTemplateProps = Parameters<typeof storyTemplate>[0] & {
-  date: number;
-};
+type Story = StoryObj<typeof storyTemplate>;
 
-export const Client: Story<StoryTemplateProps> = {
+export const Client: Story = {
   render: () => ({
     component: StoryComponent,
     template: storyTemplate,
   }),
+  args: {},
 };
 
-export const Server: Story<StoryTemplateProps> = {
+export const Server: Story = {
   ...Client,
   parameters: {
     server: {
@@ -47,10 +46,10 @@ export const Server: Story<StoryTemplateProps> = {
   },
 };
 
-export const ServerWithDecorator: Story<StoryTemplateProps> = {
+export const ServerWithDecorator = {
   ...Client,
   decorators: [
-    createDecoratorComponent<TemplateStoryProps<typeof storyTemplate>>(({ template }) => ({
+    createDecoratorComponent(({ template }) => ({
       template: () => html`
         <div style="background-color: lightblue">
           <h1>Wrapper</h1>
@@ -64,9 +63,9 @@ export const ServerWithDecorator: Story<StoryTemplateProps> = {
       id: 'useToggle',
     },
   },
-};
+} satisfies Story;
 
-export const ConvertDate: Story<StoryTemplateProps> = {
+export const ConvertDate: StoryObj<{ date: string }> = {
   render: (renderProperties) => ({
     template: (properties) => html`
       <div>
@@ -77,7 +76,9 @@ export const ConvertDate: Story<StoryTemplateProps> = {
     `,
     data: {
       ...renderProperties,
-      date: new Date(renderProperties.date).toISOString(),
+      date: renderProperties.date
+        ? new Date(renderProperties.date).toISOString()
+        : 'undefined date',
     },
   }),
   parameters: {

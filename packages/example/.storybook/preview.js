@@ -8,14 +8,11 @@ export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
   server: {
     configs: {
-      twig: {
-        url: `http://localhost:3000/story`,
-      },
       aem: {
         url: 'http://localhost:4502/content/core-components-examples/library',
       },
     },
-    url: `/story`,
+    url: `/component-templates`,
     fetchStoryHtml: fetchStoryHtmlUsingPostJson,
   },
 };
