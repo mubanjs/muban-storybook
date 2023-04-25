@@ -1,26 +1,28 @@
-import type { TemplateStoryProps, Story, Meta } from '@muban/storybook';
-import { createDecoratorComponent } from '@muban/storybook';
+import type { Meta } from '@muban/storybook';
+import { createDecoratorComponent, type StoryObj } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, type storyTemplate } from './Component';
-import { argTypes } from './StoryComponent.argTypes';
+import { StoryComponent, storyTemplate } from './resources/Component.js';
+import { argTypes } from './resources/StoryComponent.argTypes.js';
 
 export default {
   title: 'Server',
-  component: StoryComponent,
+  component: { component: StoryComponent, template: storyTemplate },
   argTypes,
   parameters: {
     server: {
-      id: 'useToggle',
+      id: 'toggle-expand',
     },
   },
-} as Meta;
+} satisfies Meta;
+
+type Story = StoryObj<typeof storyTemplate>;
 
 const addBorder = createDecoratorComponent(({ template }) => ({
   template: (): string => html`<div style="border: 1px solid red">${template}</div>`,
 }));
 
 // Render on the server!
-export const Simple: Story<TemplateStoryProps<typeof storyTemplate>> = {
+export const Simple: Story = {
   args: {
     initialValue: true,
     data: {
@@ -30,14 +32,14 @@ export const Simple: Story<TemplateStoryProps<typeof storyTemplate>> = {
   },
 };
 
-export const SimpleWithDecorator: Story<TemplateStoryProps<typeof storyTemplate>> = {
+export const SimpleWithDecorator: Story = {
   decorators: [addBorder],
   args: {
     initialValue: true,
   },
 };
 
-export const ClientTemplate: Story<TemplateStoryProps<typeof storyTemplate>> = {
+export const ClientTemplate: Story = {
   render() {
     return {
       template: () => html`<div>client-rendering</div>`,
@@ -48,7 +50,7 @@ export const ClientTemplate: Story<TemplateStoryProps<typeof storyTemplate>> = {
   },
 };
 
-export const ClientTemplateWithDecorator: Story<TemplateStoryProps<typeof storyTemplate>> = {
+export const ClientTemplateWithDecorator: Story = {
   decorators: [addBorder],
   render() {
     return {

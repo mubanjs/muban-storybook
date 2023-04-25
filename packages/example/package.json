@@ -4,8 +4,9 @@
   "main": "index.js",
   "author": "Arjan van Wijk",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "storybook": "start-storybook -p 6006",
+    "storybook": "sb dev -p 6006",
     "lint": "npm-run-all lint:*",
     "lint:eslint": "eslint ./src --ext .js,.jsx,.ts,.tsx --cache --cache-location node_modules/.cache/.eslintcache",
     "fix": "npm-run-all fix:*",
@@ -15,13 +16,27 @@
   "devDependencies": {
     "@muban/hooks": "^1.0.0-alpha.4",
     "@muban/muban": "^1.0.0-alpha.35",
-    "@muban/storybook": "^7.0.0-alpha.20",
+    "@muban/storybook": "^8.0.0",
+    "@muban/storybook-framework-webpack": "^8.0.0",
     "@muban/template": "^1.0.0-alpha.4",
-    "@storybook/addon-actions": "^6.5.13",
-    "@storybook/addon-essentials": "^6.5.13",
-    "@storybook/addon-links": "^6.5.13",
+    "@pota/twig-server": "^1.5.1",
+    "@storybook/addon-actions": "^7.0.6",
+    "@storybook/addon-essentials": "^7.0.6",
+    "@storybook/addon-links": "^7.0.6",
     "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/builder-webpack5": "^6.5.13",
-    "@storybook/manager-webpack5": "^6.5.13"
+    "@storybook/builder-webpack5": "^7.0.6",
+    "@storybook/cli": "^7.0.6"
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "@typescript-eslint/explicit-function-return-type": "off"
+        }
+      }
+    ]
   }
 }

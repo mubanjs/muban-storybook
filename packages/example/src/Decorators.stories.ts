@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { bind, computed, defineComponent, inject, provide } from '@muban/muban';
-import type { TemplateStoryProps, Story, Meta } from '@muban/storybook';
-import { createDecoratorComponent } from '@muban/storybook';
+import type { Meta } from '@muban/storybook';
+import { createDecoratorComponent, type StoryObj } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, storyTemplate } from './Component';
-import { argTypes } from './StoryComponent.argTypes';
+import { StoryComponent, storyTemplate } from './resources/Component.js';
+import { argTypes } from './resources/StoryComponent.argTypes.js';
 
 export default {
   title: 'Decorators',
   argTypes,
-} as Meta;
+} satisfies Meta;
 
-export const TemplateOnly: Story<TemplateStoryProps<typeof storyTemplate>> = {
+type Story = StoryObj<typeof storyTemplate>;
+
+export const TemplateOnly: Story = {
   render: () => ({
     component: StoryComponent,
     template: storyTemplate,
@@ -20,7 +22,7 @@ export const TemplateOnly: Story<TemplateStoryProps<typeof storyTemplate>> = {
     initialValue: false,
   },
   decorators: [
-    createDecoratorComponent<TemplateStoryProps<typeof storyTemplate>>(({ template }) => ({
+    createDecoratorComponent(({ template }) => ({
       template: () => html`
         <div style="background-color: lightblue">
           <h1>Wrapper</h1>

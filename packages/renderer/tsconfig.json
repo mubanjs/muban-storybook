@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["dom", "es2022"],
+    "declaration": true,
+    "rootDir": "./",
+    "tsBuildInfoFile": "./node_modules/.cache/.tsbuildinfo"
+  },
+  "include": ["./src/**/*.ts", "jest.config.ts"]
+}
