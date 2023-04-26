@@ -17,8 +17,8 @@
   "devDependencies": {
     "@muban/hooks": "^1.0.0-alpha.4",
     "@muban/muban": "^1.0.0-alpha.35",
-    "@muban/storybook": "^8.0.0",
-    "@muban/storybook-framework-webpack": "^8.0.0",
+    "@muban/storybook": "^8.0.0-rc.0",
+    "@muban/storybook-framework-webpack": "^8.0.0-rc.0",
     "@muban/template": "^1.0.0-alpha.4",
     "@pota/twig-server": "^1.5.1",
     "@storybook/addon-actions": "^7.0.6",

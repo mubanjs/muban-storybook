@@ -56,8 +56,8 @@
     "@storybook/core-webpack": "7.0.6",
     "@storybook/core-common": "7.0.6",
     "@storybook/global": "^5.0.0",
-    "@muban/storybook": "^8.0.0",
-    "@muban/storybook-preset-webpack": "^8.0.0",
+    "@muban/storybook": "^8.0.0-rc.0",
+    "@muban/storybook-preset-webpack": "^8.0.0-rc.0",
     "@types/node": "^16.0.0"
   },
   "devDependencies": {
