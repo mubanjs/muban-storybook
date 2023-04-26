@@ -3,7 +3,7 @@ import { bind, computed, defineComponent, inject, provide } from '@muban/muban';
 import type { Meta } from '@muban/storybook';
 import { createDecoratorComponent, type StoryObj } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, storyTemplate } from './resources/Component';
+import { StoryComponent, type storyTemplate } from './resources/Component';
 import { argTypes } from './resources/StoryComponent.argTypes';
 
 export default {
@@ -16,7 +16,18 @@ type Story = StoryObj<typeof storyTemplate>;
 export const TemplateOnly: Story = {
   render: () => ({
     component: StoryComponent,
-    template: storyTemplate,
+    template: () => html`
+      <div>
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">Instructions!</h4>
+          <p>This story has a decorator that only provides the template.</p>
+          <p class="mb-0">
+            When the decorator works, I should be wrapped in a light-blue background with a bit of
+            padding.
+          </p>
+        </div>
+      </div>
+    `,
   }),
   args: {
     initialValue: false,
@@ -24,10 +35,7 @@ export const TemplateOnly: Story = {
   decorators: [
     createDecoratorComponent(({ template }) => ({
       template: () => html`
-        <div style="background-color: lightblue">
-          <h1>Wrapper</h1>
-          ${template}
-        </div>
+        <div style="background-color: lightblue; padding: 20px">${template}</div>
       `,
     })),
   ],
@@ -47,8 +55,17 @@ export const ComponentOnly: Story = {
     }),
     template: () => html`
       <div data-component="context-test">
-        <p>Should display "foobar" as context value, which is coming from the decorator.</p>
-        Context value: <span data-ref="info"></span>
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">Instructions!</h4>
+          <p>This story has a decorator that only provides the component.</p>
+          <p class="mb-0">
+            The value below should display "foobar", which is coming from the context in the
+            decorator.
+          </p>
+        </div>
+        <p>
+          Context value: <code><span data-ref="info"></span></code>
+        </p>
       </div>
     `,
   }),
@@ -83,11 +100,17 @@ export const ComponentAndTemplate: Story = {
     }),
     template: () => html`
       <div data-component="context-test">
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">Instructions!</h4>
+          <p>This story has a decorator that provides the component and the template.</p>
+          <p class="mb-0">
+            It should be wrapped in a light-blue background (template), and the value below should
+            display "foobar", which is coming from the context in the decorator (component).
+          </p>
+        </div>
         <p>
-          Should have a blue background, and display "foobar" as context value, which is coming from
-          the decorator.
+          Context value: <code><span data-ref="info"></span></code>
         </p>
-        Context value: <span data-ref="info"></span>
       </div>
     `,
   }),
@@ -105,8 +128,7 @@ export const ComponentAndTemplate: Story = {
         },
       }),
       template: () => html`
-        <div data-component="context" style="background-color: lightblue">
-          <h1>Wrapper</h1>
+        <div data-component="context" style="background-color: lightblue; padding: 20px">
           ${template}
         </div>
       `,

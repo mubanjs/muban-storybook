@@ -3,7 +3,7 @@ import { MyComponent } from './MyComponent';
 import { myComponentTemplate } from './MyComponent.template';
 
 const meta = {
-  title: 'StoryTypes/Meta',
+  title: 'StoryTypes/Types/Meta',
   component: {
     component: MyComponent,
     template: myComponentTemplate,

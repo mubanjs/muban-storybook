@@ -3,7 +3,7 @@ import { MyComponent } from './MyComponent';
 import { myComponentTemplate } from './MyComponent.template';
 
 const meta = {
-  title: 'StoryTypes/NoComponent',
+  title: 'StoryTypes/Types/NoComponent',
 } satisfies Meta;
 
 export default meta;
