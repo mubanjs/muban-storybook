@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@muban/storybook';
-import { MyComponent } from './MyComponent.js';
-import { myComponentTemplate } from './MyComponent.template.js';
+import { MyComponent } from './MyComponent';
+import { myComponentTemplate } from './MyComponent.template';
 
 export default {
   title: 'StoryTypes/Template',

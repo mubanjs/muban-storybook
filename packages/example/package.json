@@ -4,7 +4,7 @@
   "main": "index.js",
   "author": "Arjan van Wijk",
   "license": "MIT",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "storybook": "sb dev -p 6006",
     "lint": "npm-run-all lint:*",

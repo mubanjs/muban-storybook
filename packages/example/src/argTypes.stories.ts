@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@muban/storybook';
 import { createDecoratorComponent } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, storyTemplate } from './resources/Component.js';
+import { StoryComponent, storyTemplate } from './resources/Component';
 
 export default {
   title: 'ArgTypes',

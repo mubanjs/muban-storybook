@@ -20,10 +20,14 @@
   "type": "module",
   "exports": {
     ".": {
+      "node": "./dist/index.js",
+      "require": "./dist/index.js",
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./preview": {
+      "node": "./dist/config.js",
+      "require": "./dist/config.js",
       "import": "./dist/config.js",
       "types": "./dist/config.d.ts"
     },

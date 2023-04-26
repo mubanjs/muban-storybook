@@ -3,8 +3,8 @@ import { bind, computed, defineComponent, inject, provide } from '@muban/muban';
 import type { Meta } from '@muban/storybook';
 import { createDecoratorComponent, type StoryObj } from '@muban/storybook';
 import { html } from '@muban/template';
-import { StoryComponent, storyTemplate } from './resources/Component.js';
-import { argTypes } from './resources/StoryComponent.argTypes.js';
+import { StoryComponent, storyTemplate } from './resources/Component';
+import { argTypes } from './resources/StoryComponent.argTypes';
 
 export default {
   title: 'Decorators',
