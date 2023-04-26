@@ -3,7 +3,7 @@ import { MyComponent } from './MyComponent';
 import { myComponentTemplate } from './MyComponent.template';
 
 export default {
-  title: 'StoryTypes/Template',
+  title: 'StoryTypes/Types/Template',
   component: {
     component: MyComponent,
     template: myComponentTemplate,

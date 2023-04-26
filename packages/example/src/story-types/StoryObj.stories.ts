@@ -1,15 +1,20 @@
 import type { StoryObj, Meta } from '@muban/storybook';
-import { StoryComponent, storyTemplate } from './resources/Component';
-import { argTypes } from './resources/StoryComponent.argTypes';
+import { StoryComponent, storyTemplate } from '../resources/Component';
+import { argTypes } from '../resources/StoryComponent.argTypes';
 
-export default {
-  title: 'CSF v3',
+const meta = {
+  title: 'StoryTypes/Story/CSF v3',
+  component: {
+    component: StoryComponent,
+    template: storyTemplate,
+  },
   argTypes,
 } satisfies Meta;
+export default meta;
 
-type Story = StoryObj<typeof storyTemplate>;
+type Story = StoryObj<typeof meta>;
 
-export const ClientStory: Story = {
+export const ClientStory = {
   render: () => ({
     component: StoryComponent,
     template: storyTemplate,
@@ -17,9 +22,9 @@ export const ClientStory: Story = {
   args: {
     initialValue: false,
   },
-};
+} satisfies Story;
 
-export const CustomData: Story = {
+export const CustomData = {
   render: (args) => ({
     component: StoryComponent,
     template: storyTemplate,
@@ -30,4 +35,4 @@ export const CustomData: Story = {
   args: {
     initialValue: false,
   },
-};
+} satisfies Story;

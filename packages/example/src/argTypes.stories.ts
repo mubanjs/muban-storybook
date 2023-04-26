@@ -41,7 +41,7 @@ export const Server: Story = {
   ...Client,
   parameters: {
     server: {
-      id: 'useToggle',
+      id: 'toggle-expand',
     },
   },
 };
@@ -60,7 +60,7 @@ export const ServerWithDecorator = {
   ],
   parameters: {
     server: {
-      id: 'useToggle',
+      id: 'toggle-expand',
     },
   },
 } satisfies Story;
@@ -69,9 +69,20 @@ export const ConvertDate: StoryObj<{ date: string }> = {
   render: (renderProperties) => ({
     template: (properties) => html`
       <div>
-        <h3>For client, look below</h3>
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">Client rendering</h4>
+          <p class="mb-0">
+            Look below to see how the <strong>date</strong> is rendered from the args.
+          </p>
+        </div>
         <pre><code>${JSON.stringify(properties, null, 2)}</code></pre>
-        <h3>For server, look in network panel</h3>
+        <div class="alert alert-primary">
+          <h4 class="alert-heading">Server rendering</h4>
+          <p class="mb-0">
+            Look in the <strong>Network Panel</strong> to see how the <strong>date</strong> is
+            returned.
+          </p>
+        </div>
       </div>
     `,
     data: {
@@ -81,6 +92,9 @@ export const ConvertDate: StoryObj<{ date: string }> = {
         : 'undefined date',
     },
   }),
+  args: {
+    date: new Date().toISOString(),
+  },
   parameters: {
     server: {
       id: 'toggleExpand',

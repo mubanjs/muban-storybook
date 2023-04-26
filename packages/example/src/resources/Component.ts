@@ -59,15 +59,18 @@ export function storyTemplate(
       data-ref=${ref}
       ...${rest}
     >
-      <div class="alert alert-primary">
-        <h4 class="alert-heading">Instructions!</h4>
-        <p class="mb-0">When clicking the buttons, the value should update accordingly.</p>
+      <div class="alert alert-success">
+        <h4 class="alert-heading">A story test component</h4>
+        <p>When clicking the buttons, the value should update accordingly.</p>
+        <p class="mb-0">It should also reflect the passed <code>data</code> object.</p>
       </div>
       <div>
         Value:
         <span data-ref="label" class="badge rounded-pill bg-primary"></span>
       </div>
-      <div>${data}</div>
+      <div class="my-3">
+        <pre><code>${JSON.stringify(data)}</code></pre>
+      </div>
       <div style="margin-top: 20px">
         <button type="button" data-ref="btnToggle" class="btn btn-primary" onToggle=${onToggle}>
           Toggle</button
