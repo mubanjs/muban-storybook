@@ -1,6 +1,6 @@
 import type { StoryFn, Meta } from '@muban/storybook';
-import { StoryComponent, storyTemplate } from './resources/Component.js';
-import { argTypes } from './resources/StoryComponent.argTypes.js';
+import { StoryComponent, storyTemplate } from './resources/Component';
+import { argTypes } from './resources/StoryComponent.argTypes';
 
 type Story = StoryFn<typeof storyTemplate>;
 
