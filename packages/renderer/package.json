@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook",
-  "version": "8.0.0",
+  "version": "8.0.0-rc.0",
   "description": "Storybook for Muban: View and Test Muban components.",
   "keywords": [
     "muban",

@@ -26,7 +26,9 @@ on:
         required: true
         type: choice
         options:
-          - muban-storybook
+          - renderer
+          - framework-webpack
+          - preset-webpack
 
 jobs:
   bump-version:
