@@ -28,9 +28,9 @@ jobs:
 
       - name: bump version
         run: |
-          echo "$(npm pkg get version --prefix packages/framework-webpack | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w package/framework-webpack --no-git-tag-version
-          echo "$(npm pkg get version --prefix packages/preset-webpack | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w package/preset-webpack --no-git-tag-version
-          echo "$(npm pkg get version --prefix packages/renderer | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w package/renderer --no-git-tag-version
+          echo "$(npm pkg get version --prefix packages/framework-webpack | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w packages/framework-webpack --no-git-tag-version
+          echo "$(npm pkg get version --prefix packages/preset-webpack | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w packages/preset-webpack --no-git-tag-version
+          echo "$(npm pkg get version --prefix packages/renderer | cut -d '"' -f 2 | cut -d '-' -f 1)-dev.$(git rev-parse --short HEAD)" | xargs npm version -w packages/renderer --no-git-tag-version
 
       - name: publish
         run: |
