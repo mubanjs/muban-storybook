@@ -54,10 +54,10 @@
   "dependencies": {
     "@storybook/core-webpack": "7.0.6",
     "@types/node": "^16.0.0",
+    "ts-loader": "^9.4.2",
     "webpack": "5"
   },
   "devDependencies": {
-    "ts-loader": "^9.4.2",
     "typescript": "~5.0.4"
   },
   "engines": {
