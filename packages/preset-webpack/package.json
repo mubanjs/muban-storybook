@@ -12,10 +12,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/@mubanjs/muban-storybook.git"
+    "url": "git+https://github.com/mubanjs/muban-storybook.git"
   },
   "bugs": {
-    "url": "https://github.com/@mubanjs/muban-storybook/issues"
+    "url": "https://github.com/mubanjs/muban-storybook/issues"
   },
   "homepage": "https://github.com/mubanjs/muban-storybook/tree/main/packages/preset-webpack#readme",
   "type": "module",
