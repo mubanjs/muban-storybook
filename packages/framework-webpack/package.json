@@ -52,7 +52,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@storybook/builder-webpack5": "7.0.6",
+    "@storybook/builder-webpack5": "7.0.9",
     "@storybook/core-webpack": "7.0.6",
     "@storybook/core-common": "7.0.6",
     "@storybook/global": "^5.0.0",
