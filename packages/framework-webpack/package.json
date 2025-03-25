@@ -1,6 +1,6 @@
 {
   "name": "@muban/storybook-framework-webpack",
-  "version": "8.0.0-rc.0",
+  "version": "8.0.0",
   "description": "Storybook for Muban: The webpack framework.",
   "keywords": [
     "muban",
